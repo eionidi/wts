@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wts</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <title>wts</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
-<%= yield %>
-
+  <header><%= content_for :header %></header>
+  <div class='wts--main--content'>
+    <%= yield %>
+    <main class='wts--main--main'>M</main>
+    <nav class='wts--main--nav'>N</nav>
+    <aside class='wts--main--side'>AS</aside>
+  </div>
+  <footer>
+    Footer content
+  </footer>
 </body>
 </html>

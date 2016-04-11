@@ -1,0 +1,21 @@
+.wts--main--content {
+  display: flex;
+  flex-direction: column;
+}
+
+.wts--main--nav {
+  order: -1;
+}
+
+@media (min-width: 768px) {
+  .wts--main--content {
+    flex-direction: row;
+    flex: 1;
+  }
+  .wts--main--main {
+    flex: 1;
+  }
+  .wts--main--nav, .wts--main--side {
+    flex: 0 0 12em;
+  }
+}
