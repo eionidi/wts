@@ -1,0 +1,20 @@
+<% content_for(:header) { "List of Users" } %>
+
+<% content_for(:nav) { link_to 'new User', new_user_path } %>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>E-Mail</th>
+    <th>Name</th>
+    <th>Role</th>
+  </tr>
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= link_to user.id, user_path(user) %></td>
+      <td><%= user.email %></td>
+      <td><%= user.name %></td>
+      <td><%= user.role %></td>
+    </tr>
+  <% end %>
+</table>

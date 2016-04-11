@@ -7,13 +7,11 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-  <header><%= content_for :header %></header>
+  <header><%= yield :header %></header>
   <div class='wts--main--content'>
-    <%= yield %>
-    <main class='wts--main--main'>M</main>
-    <nav class='wts--main--nav'>N</nav>
-    <aside class='wts--main--side'>AS</aside>
+    <main class='wts--main--main'><%= yield %></main>
+    <nav class='wts--main--nav'><%= yield :nav %></nav>
+    <aside class='wts--main--side'><%= yield :side %></aside>
   </div>
   <footer>
     Footer content
