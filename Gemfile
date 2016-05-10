@@ -16,6 +16,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 group :development do
   gem 'quiet_assets'
+  gem 'letter_opener'
 end
 
 group :test do
