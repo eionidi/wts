@@ -15,7 +15,6 @@ class User < ActiveRecord::Base
   private
 
   def send_notification
-    # TODO: send notification to admin
-    puts "TODO: send notification to admin"
+    UsersMailer.new_user(self).deliver_now
   end
 end
