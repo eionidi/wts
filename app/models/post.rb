@@ -8,4 +8,9 @@ class Post < ActiveRecord::Base
   def author_name
     author.name
   end
+
+  def author_role
+    return '' if author.user?
+    author.role
+  end
 end
