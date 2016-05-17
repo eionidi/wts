@@ -11,10 +11,11 @@ web-testing sandbox project
 * exec `bundle install`
 * exec `rake db:create`
 
-## After update
+## After each update
 * cd to repo's directory
 * exec `bundle install`
 * exec `rake db:migrate`
+* exec `RAILS_ENV=test rake db:reset`
 
 ## Run app
 * cd to repo's directory
@@ -23,5 +24,4 @@ web-testing sandbox project
 
 ## Run test
 * cd to repo's directory
-* exec `RAILS_ENV=test rake db:reset`
 * exec `rspec` or `rspec path/to/file`
