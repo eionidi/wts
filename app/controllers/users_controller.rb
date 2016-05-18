@@ -3,6 +3,11 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
+
+    respond_to do |f|
+      f.html
+      f.json { render json: @users.as_json(only: %i(id email role name created_at)) }
+    end
   end
 
   def new

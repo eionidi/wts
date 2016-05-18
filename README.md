@@ -4,6 +4,11 @@ web-testing sandbox project
 ## Requirements
 * Ruby 2.3.0
 * gemset wts
+* phantomsjs
+
+## Phantomjs
+* download (http://phantomjs.org/download.html)
+* extract and move to PATH (`sudo mv phantomjs /usr/local/bin/phantomjs` for Ubuntu)
 
 ## Install
 * clone repo
