@@ -8,6 +8,12 @@ describe User do
       expect(user.errors[wrong_attr]).not_to be_empty
     end
 
+    def user_valid(user)
+      expect(user.valid?).to be true
+      expect(user.save).to be true
+      expect(user.errors).to be_empty
+    end
+
     describe 'on email' do
       it 'should not save user w/o email' do
         user_not_valid User.new(name: Faker::Name.name), :email
@@ -24,6 +30,12 @@ describe User do
       it 'should not save user w/exists email' do
         user = create :user
         user_not_valid User.new(name: Faker::Name.name, email: user.email), :email
+      end
+      it 'should save user w/minimal email' do
+        user_valid User.new(name: Faker::Name.name, email: 'a@a.a')
+      end
+      it 'should save user w/maximum email' do
+        user_valid User.new(name: Faker::Name.name, email: "#{'a' * 251}@a.a")
       end
     end
   end
