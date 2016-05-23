@@ -39,17 +39,23 @@ describe User do
       end
     end
     
-    describe 'user name' do
+    describe 'on name' do
       it 'should not save user w/o name' do
         user_not_valid User.new(email: Faker::Internet.email, name: ""), :name
       end
-    end	
-
-	describe 'author name ' do
-	  it 'should not save post w/o author' do
-	    post_not_valid Post.new(name: Faker::Name.name), :author
+      it 'should not save user w/short name' do
+        user_not_valid User.new(email: Faker::Internet.email, name: 'aa'), :name
       end
-    end
+      it 'should not save user w/long name' do
+        user_not_valid User.new(email: Faker::Internet.email, name: "a" * 260), :name
+      end
+      it 'should save user w/minimal name' do
+        user_valid User.new(email: Faker::Internet.email, name: 'aaa')
+      end
+      it 'should save user w/maximum name' do
+        user_valid User.new(email: Faker::Internet.email, name: "a" * 255)
+      end
+    end	
   end
   
   context 'association' do
@@ -62,29 +68,15 @@ describe User do
         expect(first_user.posts.to_a).to eq first_user_posts
       end
     end
-    
-    describe 'posts author' do
-    #пост может принадлежать только одному автору
-    # у автора моет быть несколько постов
-      #it { should belongs_to(:author) }
-      #it 'should has only one author' do
-      it {should has_one (:author)}
-      end
-    end
-    
-    describe 'author' do
-      it { should have_many(:post) }
-      end
-    end
-    
+      
     describe 'author of any role' do
       it 'should create post' do
-        user = create :user, role :{user: 1}
-        moderator = create :user, role :{moderator: 2}
-        admin = create :user, role :{admin: 3}
-        user_post = Post.new { create :post, author: user }
-        moderator_post = Post.new { create :post, author: moderator }
-        admin_post = Post.new { create :post, author: admin }
+        user = create :user, role: 1
+        moderator = create :user, role: 2
+        admin = create :user, role: 3
+        user_post = create :post, author: user 
+        moderator_post = create :post, author: moderator
+        admin_post = create :post, author: admin
       end
     end
   end  
@@ -108,4 +100,4 @@ describe User do
       expect(user.last_post).to eq posts.last
     end
   end
-
+end
