@@ -68,18 +68,6 @@ describe User do
         expect(first_user.posts.to_a).to eq first_user_posts
       end
     end
-      
-    describe 'author of any role' do
-      it 'should create post' do
-        user = create :user, :user
-        moderator = create :user, :moderator
-        admin = create :user, :admin
-        user_post = create :post, author: user
-        moderator_post = create :post, :with moderator
-        admin_post = create :post, :with admin
-      end
-    end
-  end  
   
   context 'callback' do
     describe 'after_create' do
