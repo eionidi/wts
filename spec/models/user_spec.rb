@@ -71,12 +71,12 @@ describe User do
       
     describe 'author of any role' do
       it 'should create post' do
-        user = create :user, role: 1
-        moderator = create :user, role: 2
-        admin = create :user, role: 3
-        user_post = create :post, author: user 
-        moderator_post = create :post, author: moderator
-        admin_post = create :post, author: admin
+        user = create :user, :user
+        moderator = create :user, :moderator
+        admin = create :user, :admin
+        user_post = create :post, author: user
+        moderator_post = create :post, :with moderator
+        admin_post = create :post, :with admin
       end
     end
   end  

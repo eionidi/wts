@@ -14,10 +14,22 @@ describe Post do
       expect(post.errors).to be_empty
     end
 
-	describe 'author name ' do
-	  it 'should not save post w/o author' do
-	    post_not_valid Post.new(trait :with_user), :author
+    describe 'on author' do
+      it 'should not save post w/o author' do
+	post_not_valid Post.new(title: Faker::Lorem.sentence, content: Faker::Lorem.paragraph), :author
       end
-	end
+    end
+
+  context 'association' do
+    describe 'author of any role' do
+      it 'should create post' do
+        user = create(:user, :user, name: 'Vasya')
+        moderator = create :user, :moderator
+        admin = create :user, :admin
+        user_post = create :post, author: user
+        moderator_post = create(:post, author: moderator)
+        admin_post = create :post, author: admin
+      end
+    end
   end
 end
