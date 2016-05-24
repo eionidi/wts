@@ -38,4 +38,19 @@ feature 'users', js: true do
       expect(page.find('.flash-error').text).not_to be_empty
     end
   end
+
+  context 'delete user' do
+    scenario 'correct case' do
+      user = create :user
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      expect(page.find('header').text).to eq "User ##{user.id}"
+      expect(page).to have_link 'delete'
+      click_on 'delete'
+      expect(page.find('header').text).to eq 'List of Users'
+      expect(page.body).not_to match "<tr><td>E-Mail:</td><td>#{user.email}</td></tr>"
+      expect(page.body).not_to match "<tr><td>Name:</td><td>#{user.name}</td></tr>"
+    end
+  end
 end
