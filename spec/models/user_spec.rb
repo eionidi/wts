@@ -68,6 +68,7 @@ describe User do
         expect(first_user.posts.to_a).to eq first_user_posts
       end
     end
+  end
   
   context 'callback' do
     describe 'after_create' do
