@@ -16,12 +16,11 @@ describe Post do
 
     describe 'on post' do
       it 'should not save post w/o author' do
-	     post_not_valid Post.new(title: Faker::Lorem.sentence, content: Faker::Lorem.paragraph), :author
+	    post_not_valid Post.new(title: Faker::Lorem.sentence, content: Faker::Lorem.paragraph), :author
       end
 
       it 'should not save post w/o content' do
-	     # post_not_valid Post.new(title: Faker::Lorem.sentence, :with_user), :content
-       post_not_valid FactoryGirl.build(:post, :with_user, content: nil), :content
+        post_not_valid FactoryGirl.build(:post, :with_user, content: nil), :content
       end
 
       it 'should not save short post' do
@@ -41,7 +40,7 @@ describe Post do
       end
       
       it 'should not save post w/o title' do
-	     post_not_valid Post.new(content: Faker::Lorem.paragraph, author: create(:user)), :title
+	    post_not_valid Post.new(content: Faker::Lorem.paragraph, author: create(:user)), :title
       end
 
       it 'should not save post w/short title' do
@@ -61,8 +60,16 @@ describe Post do
       end
     end
   end
-
+  
   context 'association' do
+    describe 'posts' do
+      it 'should ' do
+        
+      end
+    end
+  end
+  
+  context 'method' do
     describe 'author of any role' do
       it 'should create post' do
         user = create :user, :user
@@ -76,13 +83,13 @@ describe Post do
         expect(admin_post.author_role).to eq 'admin'
       end
     end
-  end
-  
-  context 'callback' do
-    describe 'after_create_post' do
-      it 'should send email' do
-        expect { create :post, author: create(:user) }.to change { ActionMailer::Base.deliveries.count }.by 1
+    
+    describe 'posts' do
+      it 'should return author name' do
+        user = create :user, :user
+        user_post = create :post, author: user
+        expect(user_post.author_name).to eq user.name
       end
     end
   end
-end
+end 
