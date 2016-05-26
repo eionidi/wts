@@ -63,6 +63,14 @@ describe Post do
   end
 
   context 'association' do
+    describe 'posts' do
+      it 'should ' do
+        
+      end
+    end
+  end
+  
+  context 'method' do
     describe 'author of any role' do
       it 'should create post' do
         user = create :user, :user
@@ -76,13 +84,13 @@ describe Post do
         expect(admin_post.author_role).to eq 'admin'
       end
     end
-  end
-  
-  context 'callback' do
-    describe 'after_create_post' do
-      it 'should send email' do
-        expect { create :post, author: create(:user) }.to change { ActionMailer::Base.deliveries.count }.by 1
+    
+    describe 'posts' do
+      it 'should return author name' do
+        user = create :user, :user
+        user_post = create :post, author: user
+        expect(user_post.author_name).to eq user.name
       end
     end
   end
-end
+end 
