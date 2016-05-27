@@ -76,7 +76,7 @@ feature 'users', js: true do
       click_on user.id
       expect(page).to have_link 'edit'
       click_on 'edit'
-      #puts page.body.inspect
+      puts page.body.inspect
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       page.fill_in 'user[email]', with: 'newemail@name.new'
