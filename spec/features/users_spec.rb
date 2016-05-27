@@ -75,9 +75,9 @@ feature 'users', js: true do
       expect(page).to have_link user.id
       click_on user.id
       expect(page).to have_link 'edit'
-      #expect(page).to have_selector 'input[value="edit"]'
       click_on 'edit'
-      #expect(page.body).to match "Edit User ##{user.id}"
+      #puts page.body.inspect
+      expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       page.fill_in 'user[email]', with: 'newemail@name.new'
       find('input[value="update"]').click
@@ -93,7 +93,7 @@ feature 'users', js: true do
       click_on user.id
       expect(page).to have_link 'edit'
       click_on 'edit'
-      #expect(page.find('header').text).to eq "Edit User ##{user.id}"
+      expect(page.find('header').text).to eq "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       page.fill_in 'user[email]', with: 'wrong_email'
       find('input[value="update"]').click

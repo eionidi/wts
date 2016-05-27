@@ -63,8 +63,10 @@ describe Post do
   
   context 'association' do
     describe 'posts' do
-      it 'should ' do
-        
+      it 'should return post author' do
+      	user = create :user, :user
+        user_post = create :post, author: user
+        expect(user_post.author).to eq user
       end
     end
   end
