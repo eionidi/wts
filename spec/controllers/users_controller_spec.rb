@@ -43,4 +43,18 @@ describe UsersController do
       expect(response).to have_http_status(404)
     end
   end
+  
+  describe '#new' do
+    it 'should show new user form' do
+      users.values.each(&:reload)
+      get :new
+      expect(response).to have_http_status(200).and render_template 'new'
+      expect(response.body).to match 'New user'
+      expect(controller.instance_variable_get('@user')).to eq User.new
+    end
+  end
+  
+  #describe '#create' do
+  
+  #describe '#destroy' do
 end
