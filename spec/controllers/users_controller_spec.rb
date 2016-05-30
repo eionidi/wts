@@ -39,21 +39,6 @@ describe UsersController do
     expect(User.roles[user.role]).to eq user_attrs[:role]
   end
   
-  def user_created(user)
-  	user.reload
-    expect(user.email).to eq user_params[:email]
-    expect(user.name).to eq user_params[:name]
-    expect(response).to redirect_to "/users"
-    expect(flash[:notice]).to eq "User ##{user.id} created!"
-  end
-  
-  def user_not_created(user)
-  	user.reload
-    expect(user.email).to eq 'wrong email'
-    expect(user.name).to eq user_params[:name]
-    expect(flash[:error]).to eq "Errors: #{@user.errors.full_messages.join ', '}"
-  end
-  
   describe '#index' do
     it 'should show list of users' do
       users.values.each(&:reload)
@@ -91,34 +76,44 @@ describe UsersController do
   
   describe '#new' do
     it 'should show new user form' do
-      users.values.each(&:reload)
       get :new
       expect(response).to have_http_status(200).and render_template 'new'
       expect(response.body).to match 'New user'
-      expect(controller.instance_variable_get('@user')).to eq User.new
-    end
-  end
-  
-  shared_examples 'create user' do |attr_name|
-    it 'with all fields filled' do
-      post :create, id: user.id, user: user_params
-      user_created user
-      expect(response).to render_template 'create'
-      expect(response.body).to match 'List of Users'
-      expect(user.id).to eq (User.last.id + 1)
     end
   end
 
-  #describe '#create' do
+  describe '#create' do
+    it 'should create user with all fields filled' do
+      user = create :user, user_params
+      expect(user.email).to eq user_params[:email]
+      expect(user.name).to eq user_params[:name]
+      #expect(response).to redirect_to "/users"
+      expect(response).to have_http_status(200)
+      #нет всплывашки expect(flash[:notice]).to eq "User ##{user.id} created!"
+      #expect{post :create, user: user_params}.to change{User.count}.by 1
+      expect(User.last).to eq user
+    end
+     
+    it 'should not create user w/o name' do 
+      user = create :user, email: Faker::Internet.email
+      expect(response.body).to match 'New user'
+      expect{post :create, user: user_params}.not_to change{User.count}.by 1
+    end
+    
+    it 'should not create user w/o email' do 
+      user = create :user, name: Faker::Name.name
+      expect(response.body).to match 'New user'
+      expect{post :create, user: user_params}.not_to change{User.count}.by 1
+    end
+  end
     
 
   describe '#destroy' do
     it 'should destroy user' do
       user = create :user, user_attrs
-      post :destroy
-      expect(response.body).to match 'List of Users'
-      expect(page.body).not_to match user.email
-      expect(page.body).not_to match user.name
+      delete :destroy, id: user.id
+      expect(response).to redirect_to '/users'
+      #expect { delete :destroy, user: user_params }.to change { User.count }.by -1
     end
   end
 
