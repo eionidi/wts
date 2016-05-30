@@ -90,6 +90,13 @@ describe UsersController do
       patch :update, id: user.id, user: user_params
       user_updated user
     end
+    it 'should save updated_at' do
+      user = create :user, user_attrs
+      time = Faker::Time.between 1.year.ago, 1.year.from_now
+      Timecop.freeze time
+      expect { patch :update, id: user.id, user: user_params }.to change { user.reload.updated_at.to_i }.to time.to_i
+      Timecop.return
+    end
     it 'should ignore not permitted attrs' do
       user = create :user, user_attrs
       old_id = user.id.freeze
