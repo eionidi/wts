@@ -21,6 +21,7 @@ Capybara.register_driver :poltergeist do |app|
 end
 Capybara.default_driver = :poltergeist
 Capybara.javascript_driver = :poltergeist
+Capybara.default_wait_time = 30
 
 ActiveRecord::Migration.maintain_test_schema!
 
