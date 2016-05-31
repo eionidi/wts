@@ -1,4 +1,5 @@
 require 'rails_helper'
+RSpec::Matchers.define_negated_matcher :not_change, :change
 
 describe UsersController do
   let(:users) do
@@ -84,28 +85,24 @@ describe UsersController do
 
   describe '#create' do
     it 'should create user with all fields filled' do      
-      expect{post :create, user: user_params}.to change{User.count}.by 1
+      expect { post :create, user: user_params }.to change { User.count }.by 1
       user = User.last
       expect(user.email).to eq user_params[:email]
       expect(user.name).to eq user_params[:name]
       expect(response).to redirect_to "/users/#{user.id}"
-      expect(response).to have_http_status(302)
       expect(flash[:notice]).to eq "User ##{user.id} created!"
-      expect(User.last).to eq user
     end
      
     it 'should not create user w/o name' do 
-      expect{post :create, user: user_params.merge(name: nil)}.to change{User.count}.by 0
-      #user = create :user, email: Faker::Internet.email
-
+      expect { post :create, user: user_params.merge(name: nil) }.to not_change { User.count }
       expect(response.body).to match 'New user'
-      
+      expect(flash[:error]).not_to be_empty
     end
     
     it 'should not create user w/o email' do 
-      expect{post :create, user: user_params.merge(email: nil)}.to change{User.count}.by 0
-      #user = create :user, name: Faker::Name.name
-      expect(response.body).to match 'New user'      
+      expect{post :create, user: { email: Faker::Internet.email } }.to change { User.count }.by 0
+      expect(response.body).to match 'New user'
+      expect(flash[:error]).not_to be_empty      
     end
   end
     
@@ -114,8 +111,12 @@ describe UsersController do
     it 'should destroy user' do
       user = create :user, user_attrs
       expect { delete :destroy, id: user.id }.to change { User.count }.by -1
-      expect(response).to redirect_to '/users'
-      
+      expect(response).to redirect_to '/users'  
+    end
+
+    it 'should not destroy user' do
+      expect { delete :destroy, id: User.last.id + 1 }.to change { User.count }.by 0
+      expect(response).to have_http_status(404)
     end
   end
 
