@@ -1,0 +1,11 @@
+<%= form_for post, url: { action: action } do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title, required: true, maxlength: 255 %>
+  <%= f.label :content %>
+  <%= f.text_area :content, required: true, maxlength: 2048, cols: 80 %>
+  <br>
+  <%= f.label :author_id %>
+  <%= f.select :author_id, User.all.pluck(:name, :id), required: true %>
+  <br>
+  <%= f.submit action %>
+<% end %>
