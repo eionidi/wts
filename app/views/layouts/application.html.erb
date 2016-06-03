@@ -11,7 +11,7 @@
   <%= render 'shared/flash' if flash.any? %>
   <div class='wts--main--content'>
     <main class='wts--main--main'><%= yield %></main>
-    <nav class='wts--main--nav'><%= yield :nav %></nav>
+    <nav class='wts--main--nav'><%= render 'shared/navigation' %></nav>
     <aside class='wts--main--side'><%= yield :side %></aside>
   </div>
   <footer>
