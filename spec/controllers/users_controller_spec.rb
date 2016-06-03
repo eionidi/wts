@@ -83,6 +83,14 @@ describe UsersController do
     end
   end
 
+  shared_examples 'create user' do |attr_name|
+    it 'should not create user' do 
+      expect { post :create, user: user_params.merge(attr_name => nil) }.to not_change { User.count }
+      expect(response.body).to match 'New user'
+      expect(flash[:error]).not_to be_empty
+    end
+  end
+
   describe '#create' do
     it 'should create user with all fields filled' do      
       expect { post :create, user: user_params }.to change { User.count }.by 1
@@ -92,21 +100,21 @@ describe UsersController do
       expect(response).to redirect_to "/users/#{user.id}"
       expect(flash[:notice]).to eq "User ##{user.id} created!"
     end
-     
-    it 'should not create user w/o name' do 
-      expect { post :create, user: user_params.merge(name: nil) }.to not_change { User.count }
-      expect(response.body).to match 'New user'
-      expect(flash[:error]).not_to be_empty
-    end
+    [:name, :email].each { |attr_name| it_behaves_like 'create user', attr_name }
+
+    # it 'should not create user w/o name' do 
+    #   expect { post :create, user: user_params.merge(name: nil) }.to not_change { User.count }
+    #   expect(response.body).to match 'New user'
+    #   expect(flash[:error]).not_to be_empty
+    # end
     
-    it 'should not create user w/o email' do 
-      expect{post :create, user: { email: Faker::Internet.email } }.to change { User.count }.by 0
-      expect(response.body).to match 'New user'
-      expect(flash[:error]).not_to be_empty      
-    end
+    # it 'should not create user w/o email' do 
+    #   expect{post :create, user: { email: Faker::Internet.email } }.to change { User.count }.by 0
+    #   expect(response.body).to match 'New user'
+    #   expect(flash[:error]).not_to be_empty      
+    # end
   end
     
-
   describe '#destroy' do
     it 'should destroy user' do
       user = create :user, user_attrs
