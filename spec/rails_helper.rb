@@ -15,13 +15,13 @@ Capybara.register_driver :poltergeist do |app|
     timeout: 120,
     debug: false,
     phantomjs_options: ['--load-images=no', '--disk-cache=false'],
-    inspector: true,
+    inspector: true
   }
   Capybara::Poltergeist::Driver.new app, options
 end
 Capybara.default_driver = :poltergeist
 Capybara.javascript_driver = :poltergeist
-Capybara.default_wait_time = 30
+Capybara.default_max_wait_time = 30
 
 ActiveRecord::Migration.maintain_test_schema!
 
