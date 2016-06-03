@@ -24,19 +24,19 @@ describe Post do
       end
 
       it 'should not save short post' do
-        post_not_valid Post.new(title: Faker::Lorem.sentence, content: "a" * 5, author: create(:user)), :content
+        post_not_valid Post.new(title: Faker::Lorem.sentence, content: 'a' * 5, author: create(:user)), :content
       end
 
       it 'should not save long post' do
-        post_not_valid Post.new(title: Faker::Lorem.sentence, content: "a" * 2050, author: create(:user)), :content
+        post_not_valid Post.new(title: Faker::Lorem.sentence, content: 'a' * 2050, author: create(:user)), :content
       end
 
       it 'should save post w/minimal content' do
-        post_valid Post.new(title: Faker::Lorem.sentence, content: "a" * 8, author: create(:user))
+        post_valid Post.new(title: Faker::Lorem.sentence, content: 'a' * 8, author: create(:user))
       end
 
       it 'should save post w/maximum content' do
-        post_valid Post.new(title: Faker::Lorem.sentence, content: "a" * 2048, author: create(:user))
+        post_valid Post.new(title: Faker::Lorem.sentence, content: 'a' * 2048, author: create(:user))
       end
 
       it 'should not save post w/o title' do
@@ -44,19 +44,19 @@ describe Post do
       end
 
       it 'should not save post w/short title' do
-        post_not_valid Post.new(content: Faker::Lorem.paragraph, title: "aa", author: create(:user)), :title
+        post_not_valid Post.new(content: Faker::Lorem.paragraph, title: 'aa', author: create(:user)), :title
       end
 
       it 'should not save post w/long title' do
-        post_not_valid Post.new(content: Faker::Lorem.paragraph, title: "a" * 260, author: create(:user)), :title
+        post_not_valid Post.new(content: Faker::Lorem.paragraph, title: 'a' * 260, author: create(:user)), :title
       end
 
       it 'should save post w/minimal title' do
-        post_valid Post.new(content: Faker::Lorem.paragraph, title: "aaa", author: create(:user))
+        post_valid Post.new(content: Faker::Lorem.paragraph, title: 'aaa', author: create(:user))
       end
 
       it 'should save post w/maximum title' do
-        post_valid Post.new(title: Faker::Lorem.sentence, content: "a" * 255, author: create(:user))
+        post_valid Post.new(title: Faker::Lorem.sentence, content: 'a' * 255, author: create(:user))
       end
     end
   end

@@ -25,7 +25,7 @@ describe User do
         user_not_valid User.new(name: Faker::Name.name, email: "#{'a' * 255}@a.a"), :email
       end
       it 'should not save user w/wrong email' do
-        user_not_valid User.new(name: Faker::Name.name, email: "a" * 10), :email
+        user_not_valid User.new(name: Faker::Name.name, email: 'a' * 10), :email
       end
       it 'should not save user w/exists email' do
         user = create :user
@@ -38,26 +38,26 @@ describe User do
         user_valid User.new(name: Faker::Name.name, email: "#{'a' * 251}@a.a")
       end
     end
-    
+
     describe 'on name' do
       it 'should not save user w/o name' do
-        user_not_valid User.new(email: Faker::Internet.email, name: ""), :name
+        user_not_valid User.new(email: Faker::Internet.email, name: ''), :name
       end
       it 'should not save user w/short name' do
         user_not_valid User.new(email: Faker::Internet.email, name: 'aa'), :name
       end
       it 'should not save user w/long name' do
-        user_not_valid User.new(email: Faker::Internet.email, name: "a" * 260), :name
+        user_not_valid User.new(email: Faker::Internet.email, name: 'a' * 260), :name
       end
       it 'should save user w/minimal name' do
         user_valid User.new(email: Faker::Internet.email, name: 'aaa')
       end
       it 'should save user w/maximum name' do
-        user_valid User.new(email: Faker::Internet.email, name: "a" * 255)
+        user_valid User.new(email: Faker::Internet.email, name: 'a' * 255)
       end
-    end	
+    end
   end
-  
+
   context 'association' do
     describe 'posts' do
       it 'should return all created posts' do
@@ -69,7 +69,7 @@ describe User do
       end
     end
   end
-  
+
   context 'callback' do
     describe 'after_create' do
       it 'should send email' do
