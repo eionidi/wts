@@ -39,7 +39,7 @@ describe UsersController do
     expect(user.name).to eq user_attrs[:name]
     expect(User.roles[user.role]).to eq user_attrs[:role]
   end
-  
+
   describe '#index' do
     it 'should show list of users' do
       users.values.each(&:reload)
@@ -74,7 +74,7 @@ describe UsersController do
       expect(response).to have_http_status(404)
     end
   end
-  
+
   describe '#new' do
     it 'should show new user form' do
       get :new
@@ -84,7 +84,7 @@ describe UsersController do
   end
 
   shared_examples 'create user' do |attr_name|
-    it 'should not create user' do 
+    it 'should not create user' do
       expect { post :create, user: user_params.merge(attr_name => nil) }.to not_change { User.count }
       expect(response.body).to match 'New user'
       expect(flash[:error]).not_to be_empty
@@ -92,7 +92,7 @@ describe UsersController do
   end
 
   describe '#create' do
-    it 'should create user with all fields filled' do      
+    it 'should create user with all fields filled' do
       expect { post :create, user: user_params }.to change { User.count }.by 1
       user = User.last
       expect(user.email).to eq user_params[:email]
@@ -102,24 +102,24 @@ describe UsersController do
     end
     [:name, :email].each { |attr_name| it_behaves_like 'create user', attr_name }
 
-    # it 'should not create user w/o name' do 
+    # it 'should not create user w/o name' do
     #   expect { post :create, user: user_params.merge(name: nil) }.to not_change { User.count }
     #   expect(response.body).to match 'New user'
     #   expect(flash[:error]).not_to be_empty
     # end
-    
-    # it 'should not create user w/o email' do 
+
+    # it 'should not create user w/o email' do
     #   expect{post :create, user: { email: Faker::Internet.email } }.to change { User.count }.by 0
     #   expect(response.body).to match 'New user'
-    #   expect(flash[:error]).not_to be_empty      
+    #   expect(flash[:error]).not_to be_empty
     # end
   end
-    
+
   describe '#destroy' do
     it 'should destroy user' do
       user = create :user, user_attrs
       expect { delete :destroy, id: user.id }.to change { User.count }.by -1
-      expect(response).to redirect_to '/users'  
+      expect(response).to redirect_to '/users'
     end
 
     it 'should not destroy user' do
