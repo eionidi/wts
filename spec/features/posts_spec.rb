@@ -56,8 +56,8 @@ feature 'posts', js: true do
       expect(page).to have_link 'delete'
       click_on 'delete'
       expect(page.find('header').text).to eq 'Posts'
-      expect(page.body).not_to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
-      expect(page.body).not_to match '<tr><td>Content:</td><td>My first post</td></tr>'
+      expect(page.body).not_to match post.title
+      expect(page.body).not_to match post.content
     end
   end
 
@@ -65,7 +65,7 @@ feature 'posts', js: true do
     scenario 'correct case' do
       user = create :user
       post = create :post, author: user
-      visit '/post'
+      visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
       expect(page.find('header').text).to eq "Post ##{post.id}"
