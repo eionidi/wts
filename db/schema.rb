@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160503082528) do
+ActiveRecord::Schema.define(version: 20160607081535) do
 
   create_table "posts", force: :cascade do |t|
     t.string   "title",      limit: 255,  null: false
@@ -24,11 +24,12 @@ ActiveRecord::Schema.define(version: 20160503082528) do
   add_index "posts", ["author_id"], name: "index_posts_on_author_id"
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",      limit: 255,             null: false
-    t.string   "name",       limit: 255,             null: false
-    t.integer  "role",                   default: 1, null: false
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.string   "email",              limit: 255,              null: false
+    t.string   "name",               limit: 255,              null: false
+    t.integer  "role",                           default: 1,  null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.string   "encrypted_password",             default: "", null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email"
