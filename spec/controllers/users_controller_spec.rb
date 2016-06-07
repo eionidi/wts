@@ -40,6 +40,8 @@ describe UsersController do
     expect(User.roles[user.role]).to eq user_attrs[:role]
   end
 
+  before(:each) { sign_in(users[:admin]) }
+
   describe '#index' do
     it 'should show list of users' do
       users.values.each(&:reload)
@@ -73,46 +75,6 @@ describe UsersController do
       get :show, id: User.last.id + 1
       expect(response).to have_http_status(404)
     end
-  end
-
-  describe '#new' do
-    it 'should show new user form' do
-      get :new
-      expect(response).to have_http_status(200).and render_template 'new'
-      expect(response.body).to match 'New user'
-    end
-  end
-
-  shared_examples 'create user' do |attr_name|
-    it 'should not create user' do
-      expect { post :create, user: user_params.merge(attr_name => nil) }.to not_change { User.count }
-      expect(response.body).to match 'New user'
-      expect(flash[:error]).not_to be_empty
-    end
-  end
-
-  describe '#create' do
-    it 'should create user with all fields filled' do
-      expect { post :create, user: user_params }.to change { User.count }.by 1
-      user = User.last
-      expect(user.email).to eq user_params[:email]
-      expect(user.name).to eq user_params[:name]
-      expect(response).to redirect_to "/users/#{user.id}"
-      expect(flash[:notice]).to eq "User ##{user.id} created!"
-    end
-    [:name, :email].each { |attr_name| it_behaves_like 'create user', attr_name }
-
-    # it 'should not create user w/o name' do
-    #   expect { post :create, user: user_params.merge(name: nil) }.to not_change { User.count }
-    #   expect(response.body).to match 'New user'
-    #   expect(flash[:error]).not_to be_empty
-    # end
-
-    # it 'should not create user w/o email' do
-    #   expect{post :create, user: { email: Faker::Internet.email } }.to change { User.count }.by 0
-    #   expect(response.body).to match 'New user'
-    #   expect(flash[:error]).not_to be_empty
-    # end
   end
 
   describe '#destroy' do

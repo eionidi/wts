@@ -21,7 +21,7 @@ Capybara.register_driver :poltergeist do |app|
 end
 Capybara.default_driver = :poltergeist
 Capybara.javascript_driver = :poltergeist
-Capybara.default_max_wait_time = 30
+Capybara.default_max_wait_time = 5
 
 ActiveRecord::Migration.maintain_test_schema!
 
@@ -38,7 +38,11 @@ RSpec.configure do |config|
   config.order = :random
 
   config.include FactoryGirl::Syntax::Methods
+  config.include Devise::TestHelpers, type: :controller
+  config.include Warden::Test::Helpers
 
+  config.before(:suite) { Warden.test_mode! }
+  config.after(:each) { Warden.test_reset! }
   config.before(:each) { Rails.application.load_seed }
   config.before(:each) { DatabaseCleaner.strategy = :transaction }
   config.before(:each, js: true) { DatabaseCleaner.strategy = :truncation }
