@@ -3,7 +3,6 @@ require 'rails_helper'
 feature 'posts', js: true do
   scenario 'list of posts' do
     visit '/posts'
-    expect(page).to have_selector 'header'
     expect(page.find('header').text).to eq 'Posts'
   end
   
@@ -20,7 +19,8 @@ feature 'posts', js: true do
       expect(page).to have_selector 'select[name="post[author_id]"]'
       page.fill_in 'post[title]', with: 'New Post Name'
       page.fill_in 'post[content]', with: 'My first post'
-      find('select[name="post[author_id]"]').click
+      #find('select[name="post[author_id]"]').click
+      select 'admin', from: "post[author_id]"
       find('input[value="create"]').click
       expect(page.find('header').text).to match 'Post #'
       expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
@@ -46,8 +46,7 @@ feature 'posts', js: true do
 
   context 'delete post' do
     scenario 'correct case' do
-      user = create :user
-      post = create :post, author: user 
+      post = create :post, :with_user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
