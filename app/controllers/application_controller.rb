@@ -13,13 +13,11 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
+    flash[:error] = exception.message
     respond_to do |format|
-      format.html do
-        flash.now[:error] = exception.message
-        redirect_to root_url
-      end
-      format.json { render json: { response: :error, message: exception.message } }
-      format.js { render js: "window.location.replace('#{root_path}')", flash: { error: exception.message } }
+      format.html { redirect_to root_url }
+      format.json { render json: { response: :error, message: exception.message }, status: 401 }
+      format.js { render js: "window.location.replace('#{root_path}')" }
     end
   end
 
