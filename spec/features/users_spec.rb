@@ -11,6 +11,12 @@ feature 'users', js: true do
     expect(page.find('header').text).to eq 'List of Users'
   end
 
+  scenario 'list of users' do
+    login_as create(:user, :user)
+    visit '/users'
+    expect(page.current_path).to eq '/'
+  end
+
   context 'delete user' do
     scenario 'correct case' do
       user = create :user

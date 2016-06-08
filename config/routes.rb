@@ -4,5 +4,5 @@ Rails.application.routes.draw do
   resources :users
   resources :posts
 
-  root to: 'users#index'
+  root to: 'posts#index'
 end
