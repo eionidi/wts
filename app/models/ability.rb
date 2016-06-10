@@ -3,7 +3,7 @@ class Ability
 
   def initialize(user)
     can %i(show), User, id: user.id
-    can %i(index show), Post
+    can %i(index show new create), Post
     can %i(edit update), Post, author: user
 
     if user.moderator?

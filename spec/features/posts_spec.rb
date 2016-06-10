@@ -1,11 +1,15 @@
 require 'rails_helper'
 
 feature 'posts', js: true do
+  let(:user) { create :user, :admin }
+
+  before(:each) { login_as user }
+
   scenario 'list of posts' do
     visit '/posts'
     expect(page.find('header').text).to eq 'Posts'
   end
-  
+
   context 'create post' do
     scenario 'correct case' do
       visit '/posts'
@@ -26,7 +30,7 @@ feature 'posts', js: true do
       expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
       expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
     end
-  
+
     scenario 'incorrect case' do
       visit '/posts'
       expect(page).to have_link 'Write post'
