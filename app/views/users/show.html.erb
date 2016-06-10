@@ -5,6 +5,9 @@
   <tr><td>E-Mail:</td><td><%= @user.email %></td></tr>
   <tr><td>Name:</td><td><%= @user.name %></td></tr>
   <tr><td>Role:</td><td><%= @user.role %></td></tr>
-  <tr><td></td><td><%= link_to 'edit', edit_user_path(@user) %></td></tr>
+  <tr>
+    <td></td>
+    <td><%= link_to 'edit', @user == current_user ? edit_user_registration_path(@user) : edit_user_path(@user) %></td>
+  </tr>
   <tr><td></td><td><%= link_to 'delete', user_path(@user), method: :delete %></td></tr>
 </table>

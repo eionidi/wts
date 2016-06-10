@@ -2,18 +2,30 @@
 <html>
 <head>
   <title>wts</title>
-  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <header><%= yield :header %></header>
-  <%= render 'shared/flash' if flash.any? %>
-  <div class='wts--main--content'>
-    <main class='wts--main--main'><%= yield %></main>
-    <nav class='wts--main--nav'><%= render 'shared/navigation' %></nav>
-    <aside class='wts--main--side'><%= yield :side %></aside>
-  </div>
+  <% if current_user %>
+    <header>
+      <%= yield :header %>
+    </header>
+    <%= render 'shared/flash' if flash.any? %>
+    <div class='wts--main--content'>
+      <main class='wts--main--main'>
+        <%= yield %>
+      </main>
+      <nav class='wts--main--nav'>
+        <%= render 'shared/navigation' %>
+      </nav>
+      <aside class='wts--main--side'>
+        <%= yield :side %>
+      </aside>
+    </div>
+  <% else %>
+    <%= yield %>
+  <% end %>
   <footer>
     Footer content
   </footer>

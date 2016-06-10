@@ -1,12 +1,13 @@
 class PostsController < ApplicationController
-  before_action :find_post, only: %i(show edit update destroy)
+  before_action :authenticate_user!
+
+  load_and_authorize_resource
 
   def index
-    @posts = Post.all.order updated_at: :desc
+    @posts = @posts.order updated_at: :desc
   end
 
   def new
-    @post ||= Post.new
   end
 
   def create
@@ -42,10 +43,6 @@ class PostsController < ApplicationController
   end
 
   private
-
-  def find_post
-    @post ||= Post.find params[:id]
-  end
 
   def post_params
     params.require(:post).permit(:title, :content, :author_id)

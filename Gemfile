@@ -10,9 +10,13 @@ gem 'coffee-rails', '~> 4.1.0'
 gem 'therubyracer', platforms: :ruby
 
 gem 'jquery-rails'
-gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
+
+gem 'devise'
+gem 'cancancan'
+
+gem 'rest-client'
 
 group :development do
   gem 'quiet_assets'
@@ -27,4 +31,5 @@ group :test do
   gem 'poltergeist'
   gem 'faker'
   gem 'timecop'
+  gem 'webmock'
 end

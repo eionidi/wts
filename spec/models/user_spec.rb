@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 describe User do
+  let(:user_w_password) { { password: 'password', password_confirmation: 'password' } }
+  let(:user_w_name) { user_w_password.merge name: Faker::Name.name }
+  let(:user_w_email) { user_w_password.merge email: Faker::Internet.email }
+
   context 'validation' do
     def user_not_valid(user, wrong_attr)
       expect(user.valid?).to be false
@@ -16,44 +20,44 @@ describe User do
 
     describe 'on email' do
       it 'should not save user w/o email' do
-        user_not_valid User.new(name: Faker::Name.name), :email
+        user_not_valid User.new(user_w_name), :email
       end
       it 'should not save user w/short email' do
-        user_not_valid User.new(name: Faker::Name.name, email: 'a@a'), :email
+        user_not_valid User.new(user_w_name.merge(email: 'a@a')), :email
       end
       it 'should not save user w/long email' do
-        user_not_valid User.new(name: Faker::Name.name, email: "#{'a' * 255}@a.a"), :email
+        user_not_valid User.new(user_w_name.merge(email: "#{'a' * 255}@a.a")), :email
       end
       it 'should not save user w/wrong email' do
-        user_not_valid User.new(name: Faker::Name.name, email: 'a' * 10), :email
+        user_not_valid User.new(user_w_name.merge(email: 'a' * 10)), :email
       end
       it 'should not save user w/exists email' do
         user = create :user
-        user_not_valid User.new(name: Faker::Name.name, email: user.email), :email
+        user_not_valid User.new(user_w_name.merge(email: user.email)), :email
       end
       it 'should save user w/minimal email' do
-        user_valid User.new(name: Faker::Name.name, email: 'a@a.a')
+        user_valid User.new(user_w_name.merge(email: 'a@a.a'))
       end
       it 'should save user w/maximum email' do
-        user_valid User.new(name: Faker::Name.name, email: "#{'a' * 251}@a.a")
+        user_valid User.new(user_w_name.merge(email: "#{'a' * 251}@a.a"))
       end
     end
 
     describe 'on name' do
       it 'should not save user w/o name' do
-        user_not_valid User.new(email: Faker::Internet.email, name: ''), :name
+        user_not_valid User.new(user_w_email.merge(name: '')), :name
       end
       it 'should not save user w/short name' do
-        user_not_valid User.new(email: Faker::Internet.email, name: 'aa'), :name
+        user_not_valid User.new(user_w_email.merge(name: 'aa')), :name
       end
       it 'should not save user w/long name' do
-        user_not_valid User.new(email: Faker::Internet.email, name: 'a' * 260), :name
+        user_not_valid User.new(user_w_email.merge(name: 'a' * 260)), :name
       end
       it 'should save user w/minimal name' do
-        user_valid User.new(email: Faker::Internet.email, name: 'aaa')
+        user_valid User.new(user_w_email.merge(name: 'aaa'))
       end
       it 'should save user w/maximum name' do
-        user_valid User.new(email: Faker::Internet.email, name: 'a' * 255)
+        user_valid User.new(user_w_email.merge(name: 'a' * 255))
       end
     end
   end

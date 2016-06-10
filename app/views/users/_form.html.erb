@@ -1,8 +1,14 @@
 <%= form_for user, url: { action: action } do |f| %>
-  <%= f.label :email %>
-  <%= f.email_field :email, required: true, maxlength: 255 %>
-  <%= f.label :name %>
-  <%= f.text_field :name, required: true, maxlength: 255 %>
+  <div class='field'>
+    <%= f.label :email %>
+    <br/>
+    <%= f.email_field :email, required: true, maxlength: 255 %>
+  </div>
+  <div class='field'>
+    <%= f.label :name %>
+    <br/>
+    <%= f.text_field :name, required: true, maxlength: 255 %>
+  </div>
   <% if role %>
     <%= f.label :role %>
     <%= f.select :role, options_for_select(User.roles, user[:role]) %>

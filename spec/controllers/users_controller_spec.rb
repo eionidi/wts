@@ -1,4 +1,5 @@
 require 'rails_helper'
+RSpec::Matchers.define_negated_matcher :not_change, :change
 
 describe UsersController do
   let(:users) do
@@ -39,7 +40,15 @@ describe UsersController do
     expect(User.roles[user.role]).to eq user_attrs[:role]
   end
 
+  before(:each) { sign_in(users[:admin]) }
+
   describe '#index' do
+    it 'test user index' do
+      sign_in users[:user]
+      users.values.each(&:reload)
+      get :index
+      expect(response).to redirect_to '/'
+    end
     it 'should show list of users' do
       users.values.each(&:reload)
       get :index
@@ -70,6 +79,19 @@ describe UsersController do
 
     it 'should return 404 w/wrong user id' do
       get :show, id: User.last.id + 1
+      expect(response).to have_http_status(404)
+    end
+  end
+
+  describe '#destroy' do
+    it 'should destroy user' do
+      user = create :user, user_attrs
+      expect { delete :destroy, id: user.id }.to change { User.count }.by -1
+      expect(response).to redirect_to '/users'
+    end
+
+    it 'should not destroy user' do
+      expect { delete :destroy, id: User.last.id + 1 }.to change { User.count }.by 0
       expect(response).to have_http_status(404)
     end
   end
