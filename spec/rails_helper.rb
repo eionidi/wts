@@ -8,6 +8,7 @@ require 'factory_girl_rails'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
+require 'webmock/rspec'
 
 Capybara.register_driver :poltergeist do |app|
   options = {
