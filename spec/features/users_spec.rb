@@ -17,6 +17,18 @@ feature 'users', js: true do
     expect(page.current_path).to eq '/'
   end
 
+  scenario 'list of users' do
+    login_as create(:user, :admin)
+    visit '/users'
+    expect(page.current_path).to eq '/users'
+  end
+
+  scenario 'list of users' do
+    login_as create(:user, :moderator)
+    visit '/users'
+    expect(page.current_path).to eq '/users'
+  end
+
   context 'delete user' do
     scenario 'correct case' do
       user = create :user
@@ -35,8 +47,30 @@ feature 'users', js: true do
 
   #сценарий просмотра пользователя
   context 'view user' do
-    scenario 'correct case' do
-      user = create :user
+    scenario 'correct case for user' do
+      user = create(:user, :user)
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      sleep 1
+      expect(page.find('header').text).to eq "User ##{user.id}"
+      expect(page.body).to match user.email
+      expect(page.body).to match user.name
+    end
+
+    scenario 'correct case for moderator' do
+      user = create(:user, :moderator)
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      sleep 1
+      expect(page.find('header').text).to eq "User ##{user.id}"
+      expect(page.body).to match user.email
+      expect(page.body).to match user.name
+    end
+
+    scenario 'correct case for admin' do
+      user = create(:user, :admin)
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
@@ -67,7 +101,7 @@ feature 'users', js: true do
     end
 
     scenario 'incorrect case' do
-      user = create :user
+      login_as create(:user, :user)
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id

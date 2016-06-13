@@ -49,7 +49,15 @@ describe UsersController do
       get :index
       expect(response).to redirect_to '/'
     end
-    it 'should show list of users' do
+    it 'should show list of users to admin' do
+      users.values.each(&:reload)
+      get :index
+      expect(response).to have_http_status(200).and render_template 'index'
+      expect(response.body).to match 'List of Users'
+      expect(controller.instance_variable_get('@users')).to eq User.all
+    end
+    it 'should show list of users to moderator' do
+      sign_in users[:moderator]
       users.values.each(&:reload)
       get :index
       expect(response).to have_http_status(200).and render_template 'index'
@@ -76,6 +84,19 @@ describe UsersController do
 
   describe '#show' do
     User.roles.keys.each { |role| it_behaves_like 'show user', role }
+    it 'should show user to user' do
+      sign_in users[:user]
+      get :show, id: User.last.id
+    end
+
+    it 'should show user to moderator' do
+      sign_in users[:moderator]
+      get :show, id: User.last.id
+    end
+
+    it 'should show user to admin' do
+      get :show, id: User.last.id
+    end
 
     it 'should return 404 w/wrong user id' do
       get :show, id: User.last.id + 1
