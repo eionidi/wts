@@ -101,7 +101,7 @@ feature 'users', js: true do
     end
 
     scenario 'incorrect case' do
-      login_as create(:user, :user)
+      user = create :user
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
