@@ -175,8 +175,8 @@ feature 'posts', js: true do
     end
 
     scenario 'correct case for admin' do
-      user = create (:user, :admin)
-      post = create :post, author: admin
+      user = create(:user, :admin)
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
@@ -186,7 +186,7 @@ feature 'posts', js: true do
     end
 
     scenario 'correct case for moderator' do
-      user = create (:user, :moderator)
+      user = create(:user, :moderator)
       post = create :post, author: moderator
       visit '/posts'
       expect(page).to have_link post.title
@@ -199,7 +199,7 @@ feature 'posts', js: true do
 
   context 'edit post' do
     scenario 'correct case for admin' do
-      user = create (:user, :admin)
+      user = create(:user, :admin)
       post = create :post, author: admin
       visit '/posts'
       expect(page).to have_link post.title
@@ -216,7 +216,7 @@ feature 'posts', js: true do
     end
 
     scenario 'correct case for moderator' do
-      user = create (:user, :moderator)
+      user = create(:user, :moderator)
       post = create :post, author: moderator
       visit '/posts'
       expect(page).to have_link post.title
@@ -233,7 +233,7 @@ feature 'posts', js: true do
     end
 
     scenario 'correct case for user' do
-      user = create (:user, :user)
+      user = create(:user, :user)
       post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
@@ -250,7 +250,7 @@ feature 'posts', js: true do
     end
 
     scenario 'incorrect case for admin' do
-      user = create (:user, :admin)
+      user = create(:user, :admin)
       post = create :post, author: admin
       visit '/posts'
       expect(page).to have_link post.title
@@ -268,7 +268,7 @@ feature 'posts', js: true do
     end
 
     scenario 'incorrect case for moderator' do
-      user = create (:user, :moderator)
+      user = create(:user, :moderator)
       post = create :post, author: moderator
       visit '/posts'
       expect(page).to have_link post.title
