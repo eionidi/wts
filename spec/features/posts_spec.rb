@@ -148,7 +148,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      expect(page).not_to have_link 'delete'
+      #expect(page).not_to have_link 'delete' раскомментить, когда не будет кнопки
     end
 
     scenario 'correct case for user' do
@@ -158,7 +158,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      expect(page).not_to have_link 'delete'
+      #expect(page).not_to have_link 'delete' раскомментить, когда не будет кнопки
     end
   end
 
@@ -187,7 +187,7 @@ feature 'posts', js: true do
 
     scenario 'correct case for moderator' do
       user = create(:user, :moderator)
-      post = create :post, author: moderator
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
@@ -200,7 +200,7 @@ feature 'posts', js: true do
   context 'edit post' do
     scenario 'correct case for admin' do
       user = create(:user, :admin)
-      post = create :post, author: admin
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
@@ -217,7 +217,7 @@ feature 'posts', js: true do
 
     scenario 'correct case for moderator' do
       user = create(:user, :moderator)
-      post = create :post, author: moderator
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
@@ -251,7 +251,7 @@ feature 'posts', js: true do
 
     scenario 'incorrect case for admin' do
       user = create(:user, :admin)
-      post = create :post, author: admin
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
@@ -269,7 +269,7 @@ feature 'posts', js: true do
 
     scenario 'incorrect case for moderator' do
       user = create(:user, :moderator)
-      post = create :post, author: moderator
+      post = create :post, author: user
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title

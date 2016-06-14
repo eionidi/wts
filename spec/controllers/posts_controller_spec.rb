@@ -46,26 +46,9 @@ describe PostsController do
   end
 
   #before(:each) { sign_up(users[:admin]) }
-
-  describe '#index' do
-    it 'test post index' do
-      sign_in users[:user]
-      posts.values.each(&:reload)
-      get :index
-      expect(response).to have_http_status(200).and render_template 'index'
-      expect(response.body).to match 'Posts'
-      expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
-    end
-    it 'should show list of posts to admin' do
-      sign_in users[:admin]
-      posts.values.each(&:reload)
-      get :index
-      expect(response).to have_http_status(200).and render_template 'index'
-      expect(response.body).to match 'Posts'
-      expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
-    end
-    it 'should show list of posts to moderator' do
-      sign_in users[:moderator]
+  shared_examples 'index' do |role|
+    it "with role '#{role}'" do
+      sign_in users[role.to_sym]
       posts.values.each(&:reload)
       get :index
       expect(response).to have_http_status(200).and render_template 'index'
@@ -73,6 +56,36 @@ describe PostsController do
       expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
     end
   end
+
+  describe '#index' do
+    User.roles.keys.each { |role| it_behaves_like 'index', role }
+  end
+
+  #   it 'test post index' do
+  #     sign_in users[:user]
+  #     posts.values.each(&:reload)
+  #     get :index
+  #     expect(response).to have_http_status(200).and render_template 'index'
+  #     expect(response.body).to match 'Posts'
+  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
+  #   end
+  #   it 'should show list of posts to admin' do
+  #     sign_in users[:admin]
+  #     posts.values.each(&:reload)
+  #     get :index
+  #     expect(response).to have_http_status(200).and render_template 'index'
+  #     expect(response.body).to match 'Posts'
+  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
+  #   end
+  #   it 'should show list of posts to moderator' do
+  #     sign_in users[:moderator]
+  #     posts.values.each(&:reload)
+  #     get :index
+  #     expect(response).to have_http_status(200).and render_template 'index'
+  #     expect(response.body).to match 'Posts'
+  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
+  #   end
+  # end
 
   shared_examples 'show post' do |role|
     it "with role '#{role}'" do
@@ -87,19 +100,6 @@ describe PostsController do
 
   describe '#show' do
     User.roles.keys.each { |role| it_behaves_like 'show post', role }
-    # it 'should show post to user' do
-    #   sign_in users[:user]
-    #   get :show, id: Post.last.id
-    # end
-
-    # it 'should show post to moderator' do
-    #   sign_in users[:moderator]
-    #   get :show, id: Post.last.id
-    # end
-
-    # it 'should show user to admin' do
-    #   get :show, id: Post.last.id
-    # end
 
     it 'should return 404 w/wrong post id' do
       sign_in users.values.sample
@@ -111,15 +111,27 @@ describe PostsController do
   end
 
   describe '#destroy' do
-    it 'should destroy post' do
+    it 'admin should destroy post' do
       sign_in users[:admin]
       post = create :post, post_attrs
       expect { delete :destroy, id: post.id }.to change { Post.count }.by -1
       expect(response).to redirect_to '/posts'
     end
 
-    it 'should not destroy post' do
+    it 'admin should not destroy post' do
       sign_in users[:admin]
+      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
+      expect(response).to have_http_status(404)
+    end
+
+    it 'user should not destroy post' do
+      sign_in users[:user]
+      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
+      expect(response).to have_http_status(404)
+    end
+
+    it 'moderator should not destroy post' do
+      sign_in users[:moderator]
       expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
       expect(response).to have_http_status(404)
     end
@@ -137,17 +149,45 @@ describe PostsController do
   end
 
   describe '#update' do
-    it 'should update all fields' do
+    it 'user should update his own post' do
       sign_in users[:user]
       patch :update, id: posts[:user].id, post: post_params
       post_updated posts[:user]
     end
-    it 'should not update post for user' do
+
+    it 'admin should update his own post' do
+      sign_in users[:admin]
+      patch :update, id: posts[:admin].id, post: post_params
+      post_updated posts[:admin]
+    end
+
+    it 'moderator should update his own post' do
+      sign_in users[:moderator]
+      patch :update, id: posts[:moderator].id, post: post_params
+      post_updated posts[:moderator]
+    end
+
+    it 'user should not update someones post' do
       sign_in users[:user]
       post = create :post, post_attrs
       patch :update, id: post.id, post: post_params
       post_not_updated post
     end
+
+    it 'admin should update someones post' do
+      sign_in users[:admin]
+      post = create :post, post_attrs
+      patch :update, id: post.id, post: post_params
+      post_updated post
+    end
+
+    it 'moderator should update someones post' do
+      sign_in users[:moderator]
+      post = create :post, post_attrs
+      patch :update, id: post.id, post: post_params
+      post_updated post
+    end
+
     it 'should save updated_at' do
       sign_in users[:admin]
       post = create :post, post_attrs
@@ -156,6 +196,7 @@ describe PostsController do
       expect { patch :update, id: post.id, post: post_params }.to change { post.reload.updated_at.to_i }.to time.to_i
       Timecop.return
     end
+
     it 'should ignore not permitted attrs' do
       sign_in users[:admin]
       post = create :post, post_attrs
@@ -164,6 +205,7 @@ describe PostsController do
       post_updated post
       expect(post.id).to eq old_id
     end
+
     it 'should not update w/wrong post id' do
       sign_in users[:admin]
       post = create :post, post_attrs
