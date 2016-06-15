@@ -87,15 +87,18 @@ describe UsersController do
     it 'should show user to user' do
       sign_in users[:user]
       get :show, id: User.last.id
+      expect(response).to have_http_status(302)
     end
 
     it 'should show user to moderator' do
       sign_in users[:moderator]
       get :show, id: User.last.id
+      expect(response).to have_http_status(200).and render_template 'show'
     end
 
     it 'should show user to admin' do
       get :show, id: User.last.id
+      expect(response).to have_http_status(200).and render_template 'show'
     end
 
     it 'should return 404 w/wrong user id' do

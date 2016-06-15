@@ -45,7 +45,6 @@ feature 'users', js: true do
     end
   end
 
-  #сценарий просмотра пользователя
   context 'view user' do
     scenario 'correct case for user' do
       user = create(:user, :user)
@@ -81,7 +80,6 @@ feature 'users', js: true do
     end
   end
 
-  #сценарий редактирования пользователя
   context 'edit user' do
     scenario 'correct case' do
       user = create :user

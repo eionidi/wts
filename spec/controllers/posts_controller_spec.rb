@@ -121,24 +121,36 @@ describe PostsController do
     end
   end
 
+  shared_examples'update own post' do |role|
+    it "with role '#{role}'" do
+      sign_in users[role.to_sym]
+      post = create :post, post_attrs
+      patch :update, id: posts[role.to_sym].id, post: post_params
+      post_updated posts[role.to_sym]
+    end
+  end
+
   describe '#update' do
-    it 'user should update his own post' do
-      sign_in users[:user]
-      patch :update, id: posts[:user].id, post: post_params
-      post_updated posts[:user]
-    end
+    User.roles.keys.each { |role| it_behaves_like 'update own post', role }
 
-    it 'admin should update his own post' do
-      sign_in users[:admin]
-      patch :update, id: posts[:admin].id, post: post_params
-      post_updated posts[:admin]
-    end
+  # describe '#update' do
+  #   it 'user should update his own post' do
+  #     sign_in users[:user]
+  #     patch :update, id: posts[:user].id, post: post_params
+  #     post_updated posts[:user]
+  #   end
 
-    it 'moderator should update his own post' do
-      sign_in users[:moderator]
-      patch :update, id: posts[:moderator].id, post: post_params
-      post_updated posts[:moderator]
-    end
+  #   it 'admin should update his own post' do
+  #     sign_in users[:admin]
+  #     patch :update, id: posts[:admin].id, post: post_params
+  #     post_updated posts[:admin]
+  #   end
+
+  #   it 'moderator should update his own post' do
+  #     sign_in users[:moderator]
+  #     patch :update, id: posts[:moderator].id, post: post_params
+  #     post_updated posts[:moderator]
+  #   end
 
     it 'user should not update someones post' do
       sign_in users[:user]
@@ -189,3 +201,4 @@ describe PostsController do
     %i(title content author_id).each { |attr_name| it_behaves_like 'update post', attr_name }
   end
 end
+
