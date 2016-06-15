@@ -45,7 +45,6 @@ describe PostsController do
     expect(post.content).to eq post_attrs[:content]
   end
 
-  #before(:each) { sign_up(users[:admin]) }
   shared_examples 'index' do |role|
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
@@ -60,32 +59,6 @@ describe PostsController do
   describe '#index' do
     User.roles.keys.each { |role| it_behaves_like 'index', role }
   end
-
-  #   it 'test post index' do
-  #     sign_in users[:user]
-  #     posts.values.each(&:reload)
-  #     get :index
-  #     expect(response).to have_http_status(200).and render_template 'index'
-  #     expect(response.body).to match 'Posts'
-  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
-  #   end
-  #   it 'should show list of posts to admin' do
-  #     sign_in users[:admin]
-  #     posts.values.each(&:reload)
-  #     get :index
-  #     expect(response).to have_http_status(200).and render_template 'index'
-  #     expect(response.body).to match 'Posts'
-  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
-  #   end
-  #   it 'should show list of posts to moderator' do
-  #     sign_in users[:moderator]
-  #     posts.values.each(&:reload)
-  #     get :index
-  #     expect(response).to have_http_status(200).and render_template 'index'
-  #     expect(response.body).to match 'Posts'
-  #     expect(controller.instance_variable_get('@posts')).to eq Post.all.order(updated_at: :desc)
-  #   end
-  # end
 
   shared_examples 'show post' do |role|
     it "with role '#{role}'" do
@@ -118,7 +91,7 @@ describe PostsController do
       expect(response).to redirect_to '/posts'
     end
 
-    it 'admin should not destroy post' do
+    it 'admin should not destroy post w/wrong id' do
       sign_in users[:admin]
       expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
       expect(response).to have_http_status(404)
@@ -126,13 +99,13 @@ describe PostsController do
 
     it 'user should not destroy post' do
       sign_in users[:user]
-      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
+      expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
       expect(response).to have_http_status(404)
     end
 
     it 'moderator should not destroy post' do
       sign_in users[:moderator]
-      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
+      expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
       expect(response).to have_http_status(404)
     end
   end
