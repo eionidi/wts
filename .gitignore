@@ -5,5 +5,5 @@
 
 /log/*
 !/log/.keep
-/public/paperclip/post_image/*
+/public/paperclip/*
 /tmp
