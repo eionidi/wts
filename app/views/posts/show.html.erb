@@ -3,6 +3,7 @@
 <table>
   <tr><td>ID:</td><td><%= @post.id %></td></tr>
   <tr><td>Title:</td><td><%= @post.title %></td></tr>
+  <tr><td>Image:</td><td><%= image_tag @post.image.url(:show) %></td></tr>
   <tr><td>Author:</td><td><%= link_to @post.author_name, user_path(@post.author) %></td></tr>
   <% if @post.author_role.present? %>
     <tr><td></td><td>(<%= @post.author_role %>)</td></tr>

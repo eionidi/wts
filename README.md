@@ -5,6 +5,7 @@ web-testing sandbox project
 * Ruby 2.3.0
 * gemset wts
 * phantomsjs
+* ImageMagick (see https://github.com/thoughtbot/paperclip/tree/v4.3.6#image-processor)
 
 ## Phantomjs
 * download (http://phantomjs.org/download.html)
@@ -15,6 +16,7 @@ web-testing sandbox project
 * cd to repo's directory
 * exec `bundle install`
 * exec `rake db:create`
+* create directory `public/paperclip/post_image/` in repo's directory
 
 ## After each update
 * cd to repo's directory
