@@ -21,6 +21,7 @@ describe PostsController do
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph,
       author: create(:user)
+      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
   let(:post_params) do
@@ -80,6 +81,39 @@ describe PostsController do
       # get :show, id: Post.last.id + 1
       get :show, id: (Post.last.try(:id) || 0) + 1
       expect(response).to have_http_status(404)
+    end
+  end
+
+  describe '#new' do
+    it 'should show new post form to admin' do
+      sign_in users[:admin]
+      get :new
+      expect(response).to have_http_status(200).and render_template 'new'
+      expect(response.body).to match 'New post'
+    end
+
+    it 'should show new post form to moderator' do
+      sign_in users[:moderator]
+      get :new
+      expect(response).to have_http_status(200).and render_template 'new'
+      expect(response.body).to match 'New post'
+    end
+
+    it 'should show new post form to user' do
+      sign_in users[:user]
+      get :new
+      expect(response).to have_http_status(200).and render_template 'new'
+      expect(response.body).to match 'New post'
+    end
+  end
+
+
+  describe '#create' do
+    it 'admin should create post' do
+      sign_in users[:admin]
+      expect { post :create, post_attrs}.to change { Post.count }.by 1
+      expect(response).to redirect_to '/posts/#{post.id}'
+      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
     end
   end
 
