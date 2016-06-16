@@ -11,9 +11,9 @@
   </tr>
   <% @posts.each do |post| %>
     <tr>
-      <td><%= link_to post.title, post_path(post) %></td>
+      <td><%= link_to_if can?(:show, post), post.title, post_path(post) %></td>
       <td><%= image_tag post.image.url(:index) %></td>
-      <td><%= link_to post.author_name, user_path(post.author) %></td>
+      <td><%= link_to_if can?(:show, post.author), post.author_name, user_path(post.author) %></td>
       <td><%= format_datetime post.updated_at %></td>
     </tr>
   <% end %>
