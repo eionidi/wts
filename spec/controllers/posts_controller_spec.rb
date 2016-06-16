@@ -93,20 +93,23 @@ describe PostsController do
 
     it 'admin should not destroy post w/wrong id' do
       sign_in users[:admin]
+      posts.values.each(&:reload)
       expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
       expect(response).to have_http_status(404)
     end
 
     it 'user should not destroy post' do
       sign_in users[:user]
+      posts.values.each(&:reload)
       expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
-      expect(response).to have_http_status(404)
+      expect(response).to redirect_to '/'
     end
 
     it 'moderator should not destroy post' do
       sign_in users[:moderator]
+      posts.values.each(&:reload)
       expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
-      expect(response).to have_http_status(404)
+      expect(response).to redirect_to '/'
     end
   end
 
@@ -133,25 +136,7 @@ describe PostsController do
   describe '#update' do
     User.roles.keys.each { |role| it_behaves_like 'update own post', role }
 
-  # describe '#update' do
-  #   it 'user should update his own post' do
-  #     sign_in users[:user]
-  #     patch :update, id: posts[:user].id, post: post_params
-  #     post_updated posts[:user]
-  #   end
-
-  #   it 'admin should update his own post' do
-  #     sign_in users[:admin]
-  #     patch :update, id: posts[:admin].id, post: post_params
-  #     post_updated posts[:admin]
-  #   end
-
-  #   it 'moderator should update his own post' do
-  #     sign_in users[:moderator]
-  #     patch :update, id: posts[:moderator].id, post: post_params
-  #     post_updated posts[:moderator]
-  #   end
-
+  
     it 'user should not update someones post' do
       sign_in users[:user]
       post = create :post, post_attrs

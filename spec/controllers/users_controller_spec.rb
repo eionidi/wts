@@ -87,7 +87,7 @@ describe UsersController do
     it 'should show user to user' do
       sign_in users[:user]
       get :show, id: User.last.id
-      expect(response).to have_http_status(302)
+      expect(response).to redirect_to '/'
     end
 
     it 'should show user to moderator' do
