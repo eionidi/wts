@@ -1,6 +1,9 @@
 <%= form_for post, url: { action: action } do |f| %>
   <%= f.label :title %>
   <%= f.text_field :title, required: true, maxlength: 255 %>
+  <%= f.label :image %>
+  <%= f.file_field :image %>
+  <br>
   <%= f.label :content %>
   <%= f.text_area :content, required: true, maxlength: 2048, cols: 80 %>
   <br>

@@ -5,4 +5,5 @@
 
 /log/*
 !/log/.keep
+/public/paperclip/*
 /tmp

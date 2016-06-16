@@ -11,14 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160607081535) do
+ActiveRecord::Schema.define(version: 20160615075819) do
 
   create_table "posts", force: :cascade do |t|
-    t.string   "title",      limit: 255,  null: false
-    t.text     "content",    limit: 2048, null: false
+    t.string   "title",              limit: 255,  null: false
+    t.text     "content",            limit: 2048, null: false
     t.integer  "author_id"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.datetime "image_updated_at"
   end
 
   add_index "posts", ["author_id"], name: "index_posts_on_author_id"
