@@ -3,6 +3,18 @@ require 'rails_helper'
 feature 'users', js: true do
   let(:user) { create :user, :admin }
 
+  def view_user(user)
+    user.reload
+    visit '/users'
+    expect(page).to have_link user.id
+    click_on user.id
+    sleep 1
+    expect(page.find('header').text).to eq "User ##{user.id}"
+    expect(page.body).to match user.email
+    expect(page.body).to match user.name
+  end
+
+
   before(:each) { login_as user }
 
   scenario 'list of users' do
@@ -48,35 +60,17 @@ feature 'users', js: true do
   context 'view user' do
     scenario 'correct case for user' do
       user = create(:user, :user)
-      visit '/users'
-      expect(page).to have_link user.id
-      click_on user.id
-      sleep 1
-      expect(page.find('header').text).to eq "User ##{user.id}"
-      expect(page.body).to match user.email
-      expect(page.body).to match user.name
+      view_user user
     end
 
     scenario 'correct case for moderator' do
       user = create(:user, :moderator)
-      visit '/users'
-      expect(page).to have_link user.id
-      click_on user.id
-      sleep 1
-      expect(page.find('header').text).to eq "User ##{user.id}"
-      expect(page.body).to match user.email
-      expect(page.body).to match user.name
+      view_user user
     end
 
     scenario 'correct case for admin' do
       user = create(:user, :admin)
-      visit '/users'
-      expect(page).to have_link user.id
-      click_on user.id
-      sleep 1
-      expect(page.find('header').text).to eq "User ##{user.id}"
-      expect(page.body).to match user.email
-      expect(page.body).to match user.name
+      view_user user
     end
   end
 

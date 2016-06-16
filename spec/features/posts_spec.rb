@@ -3,6 +3,21 @@ require 'rails_helper'
 feature 'posts', js: true do
   let(:user) { create :user, :admin }
 
+  def edit_post(post)
+    visit '/posts'
+    expect(page).to have_link post.title
+    click_on post.title
+    expect(page).to have_link 'edit'
+    click_on 'edit'
+    sleep 1
+    expect(page.body).to match "Edit post ##{post.id}"
+    expect(page).to have_selector 'input[value="update"]'
+    page.fill_in 'post[title]', with: 'Updated post'
+    find('input[value="update"]').click
+    expect(page.body).to match "Post ##{post.id}"
+    expect(page.body).to match 'Updated post'
+  end
+
   before(:each) { login_as user }
 
   scenario 'list of posts' do
@@ -31,7 +46,7 @@ feature 'posts', js: true do
       expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
     end
 
-    scenario 'correct case user' do
+    scenario 'correct case for user' do
       visit '/posts'
       expect(page).to have_link 'Write post'
       click_on 'Write post'
@@ -165,52 +180,19 @@ feature 'posts', js: true do
     scenario 'correct case for admin' do
       user = create(:user, :admin)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'Updated post'
-      find('input[value="update"]').click
-      expect(page.body).to match "Post ##{post.id}"
-      expect(page.body).to match 'Updated post'
+      edit_post post
     end
 
     scenario 'correct case for moderator' do
       user = create(:user, :moderator)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'Updated post'
-      find('input[value="update"]').click
-      expect(page.body).to match "Post ##{post.id}"
-      expect(page.body).to match 'Updated post'
+      edit_post post
     end
 
     scenario 'correct case for user' do
       user = create(:user, :user)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'Updated post'
-      find('input[value="update"]').click
-      expect(page.body).to match "Post ##{post.id}"
-      expect(page.body).to match 'Updated post'
+      edit_post post
     end
 
     scenario 'incorrect case for admin' do
