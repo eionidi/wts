@@ -8,3 +8,5 @@
 !/log/.keep
 /public/paperclip/*
 /tmp
+/.DS_Store
+/*/.DS_Store
