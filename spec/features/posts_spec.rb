@@ -20,11 +20,8 @@ feature 'posts', js: true do
       expect(page).to have_field 'post[title]'
       expect(page).to have_field 'post[content]'
       expect(page).to have_selector 'input[value="create"]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
       page.fill_in 'post[title]', with: 'New Post Name'
       page.fill_in 'post[content]', with: 'My first post'
-      #find('select[name="post[author_id]"]').click
-      select 'admin', from: "post[author_id]"
       find('input[value="create"]').click
       expect(page.find('header').text).to match 'Post #'
       expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
@@ -37,9 +34,7 @@ feature 'posts', js: true do
       click_on 'Write post'
       expect(page).to have_field 'post[title]'
       expect(page).to have_field 'post[content]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
       expect(page).to have_selector 'input[value="create"]'
-      find('select[name="post[author_id]"]').click
       page.fill_in 'post[title]', with: 'a'
       page.fill_in 'post[content]', with: 'My first post'
       find('input[value="create"]').click
