@@ -18,6 +18,22 @@ feature 'posts', js: true do
     expect(page.body).to match 'Updated post'
   end
 
+  def not_edit_post(post)
+    visit '/posts'
+    expect(page).to have_link post.title
+    click_on post.title
+    expect(page).to have_link 'edit'
+    click_on 'edit'
+    sleep 1
+    expect(page.body).to match "Edit post ##{post.id}"
+    expect(page).to have_selector 'input[value="update"]'
+    page.fill_in 'post[title]', with: 'a'
+    find('input[value="update"]').click
+    expect(page.find('header').text).to eq "Edit post ##{post.id}"
+    expect(page.body).to match 'a'
+    expect(page.find('.flash-error').text).not_to be_empty
+  end
+
   before(:each) { login_as user }
 
   scenario 'list of posts' do
@@ -198,55 +214,19 @@ feature 'posts', js: true do
     scenario 'incorrect case for admin' do
       user = create(:user, :admin)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'a'
-      find('input[value="update"]').click
-      expect(page.find('header').text).to eq "Edit post ##{post.id}"
-      expect(page.body).to match 'a'
-      expect(page.find('.flash-error').text).not_to be_empty
+      not_edit_post post
     end
 
     scenario 'incorrect case for moderator' do
       user = create(:user, :moderator)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'a'
-      find('input[value="update"]').click
-      expect(page.find('header').text).to eq "Edit post ##{post.id}"
-      expect(page.body).to match 'a'
-      expect(page.find('.flash-error').text).not_to be_empty
+      not_edit_post post
     end
 
     scenario 'incorrect case for user' do
       user = create :user
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      sleep 1
-      expect(page.body).to match "Edit post ##{post.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'post[title]', with: 'a'
-      find('input[value="update"]').click
-      expect(page.find('header').text).to eq "Edit post ##{post.id}"
-      expect(page.body).to match 'a'
-      expect(page.find('.flash-error').text).not_to be_empty
+      not_edit_post post
     end
   end
 end
