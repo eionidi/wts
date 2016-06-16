@@ -34,6 +34,34 @@ feature 'posts', js: true do
     expect(page.find('.flash-error').text).not_to be_empty
   end
 
+  def create_post(user)
+    visit '/posts'
+    expect(page).to have_link 'Write post'
+    click_on 'Write post'
+    sleep 1
+    expect(page.find('header').text).to eq 'New post'
+    expect(page).to have_field 'post[title]'
+    expect(page).to have_field 'post[content]'
+    expect(page).to have_selector 'input[value="create"]'
+    expect(page).to have_selector 'select[name="post[author_id]"]'
+    page.fill_in 'post[title]', with: 'New Post Name'
+    page.fill_in 'post[content]', with: 'My first post'
+    select 'admin', from: "post[author_id]"
+    find('input[value="create"]').click
+    expect(page.find('header').text).to match 'Post #'
+    expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
+    expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
+  end
+
+  def view_post(post)
+    visit '/posts'
+    expect(page).to have_link post.title
+    click_on post.title
+    expect(page.find('header').text).to eq "Post ##{post.id}"
+    expect(page.body).to match post.title
+    expect(page.body).to match post.content
+  end
+
   before(:each) { login_as user }
 
   scenario 'list of posts' do
@@ -44,61 +72,16 @@ feature 'posts', js: true do
   context 'create post' do
     scenario 'correct case for admin' do
       login_as create(:user, :admin)
-      visit '/posts'
-      expect(page).to have_link 'Write post'
-      click_on 'Write post'
-      sleep 1
-      expect(page.find('header').text).to eq 'New post'
-      expect(page).to have_field 'post[title]'
-      expect(page).to have_field 'post[content]'
-      expect(page).to have_selector 'input[value="create"]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
-      page.fill_in 'post[title]', with: 'New Post Name'
-      page.fill_in 'post[content]', with: 'My first post'
-      select 'admin', from: "post[author_id]"
-      find('input[value="create"]').click
-      expect(page.find('header').text).to match 'Post #'
-      expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
-      expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
+      create_post user
     end
 
     scenario 'correct case for user' do
-      visit '/posts'
-      expect(page).to have_link 'Write post'
-      click_on 'Write post'
-      sleep 1
-      expect(page.find('header').text).to eq 'New post'
-      expect(page).to have_field 'post[title]'
-      expect(page).to have_field 'post[content]'
-      expect(page).to have_selector 'input[value="create"]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
-      page.fill_in 'post[title]', with: 'New Post Name'
-      page.fill_in 'post[content]', with: 'My first post'
-      select 'admin', from: "post[author_id]"
-      find('input[value="create"]').click
-      expect(page.find('header').text).to match 'Post #'
-      expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
-      expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
+      create_post user
     end
 
     scenario 'correct case for moderator' do
       login_as create(:user, :moderator)
-      visit '/posts'
-      expect(page).to have_link 'Write post'
-      click_on 'Write post'
-      sleep 1
-      expect(page.find('header').text).to eq 'New post'
-      expect(page).to have_field 'post[title]'
-      expect(page).to have_field 'post[content]'
-      expect(page).to have_selector 'input[value="create"]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
-      page.fill_in 'post[title]', with: 'New Post Name'
-      page.fill_in 'post[content]', with: 'My first post'
-      select 'admin', from: "post[author_id]"
-      find('input[value="create"]').click
-      expect(page.find('header').text).to match 'Post #'
-      expect(page.body).to match '<tr><td>Title:</td><td>New Post Name</td></tr>'
-      expect(page.body).to match '<tr><td>Content:</td><td>My first post</td></tr>'
+      create_post user
     end
 
     scenario 'incorrect case' do
@@ -161,34 +144,19 @@ feature 'posts', js: true do
     scenario 'correct case for user' do
       user = create :user
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page.find('header').text).to eq "Post ##{post.id}"
-      expect(page.body).to match post.title
-      expect(page.body).to match post.content
+      view_post post
     end
 
     scenario 'correct case for admin' do
       user = create(:user, :admin)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page.find('header').text).to eq "Post ##{post.id}"
-      expect(page.body).to match post.title
-      expect(page.body).to match post.content
+      view_post post
     end
 
     scenario 'correct case for moderator' do
       user = create(:user, :moderator)
       post = create :post, author: user
-      visit '/posts'
-      expect(page).to have_link post.title
-      click_on post.title
-      expect(page.find('header').text).to eq "Post ##{post.id}"
-      expect(page.body).to match post.title
-      expect(page.body).to match post.content
+      view_post post
     end
   end
 
