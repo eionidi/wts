@@ -42,7 +42,8 @@ feature 'users', js: true do
   end
 
   context 'delete user' do
-    scenario 'correct case' do
+    scenario 'correct case for admin' do
+      login_as create(:user, :admin)
       user = create :user
       visit '/users'
       expect(page).to have_link user.id

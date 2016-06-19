@@ -126,7 +126,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      #expect(page).not_to have_link 'delete' раскомментить, когда не будет кнопки
+      #expect(page).not_to have_link 'delete' 
     end
 
     scenario 'correct case for user' do
@@ -136,7 +136,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      #expect(page).not_to have_link 'delete' раскомментить, когда не будет кнопки
+      #expect(page).not_to have_link 'delete' 
     end
   end
 
