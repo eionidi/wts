@@ -20,8 +20,8 @@ describe PostsController do
     {
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph,
-      author: create(:user)
-      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
+      author_id: create(:user)
+      image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
   let(:post_params) do
@@ -111,6 +111,20 @@ describe PostsController do
   describe '#create' do
     it 'admin should create post' do
       sign_in users[:admin]
+      expect { post :create, post_attrs}.to change { Post.count }.by 1
+      expect(response).to redirect_to '/posts/#{post.id}'
+      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
+    end
+
+    it 'moderator should create post' do
+      sign_in users[:moderator]
+      expect { post :create, post_attrs}.to change { Post.count }.by 1
+      expect(response).to redirect_to '/posts/#{post.id}'
+      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
+    end
+
+    it 'user should create post' do
+      sign_in users[:user]
       expect { post :create, post_attrs}.to change { Post.count }.by 1
       expect(response).to redirect_to '/posts/#{post.id}'
       expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"

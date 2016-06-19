@@ -179,20 +179,8 @@ feature 'posts', js: true do
       edit_post post
     end
 
-    scenario 'incorrect case for admin' do
+    scenario 'incorrect case' do
       user = create(:user, :admin)
-      post = create :post, author: user
-      not_edit_post post
-    end
-
-    scenario 'incorrect case for moderator' do
-      user = create(:user, :moderator)
-      post = create :post, author: user
-      not_edit_post post
-    end
-
-    scenario 'incorrect case for user' do
-      user = create :user
       post = create :post, author: user
       not_edit_post post
     end
