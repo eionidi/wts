@@ -29,6 +29,7 @@ describe PostsController do
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph,
       author: create(:user)
+      image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
 
