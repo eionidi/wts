@@ -20,8 +20,8 @@ describe PostsController do
     {
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph,
-      author_id: create(:user)
-      image: fixture_file_upload('fixtures/post_image.png', 'image/png')
+      author: create(:user)
+      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
   let(:post_params) do
@@ -29,7 +29,7 @@ describe PostsController do
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph,
       author: create(:user)
-      image: fixture_file_upload('fixtures/post_image.png', 'image/png')
+      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
 
@@ -85,28 +85,38 @@ describe PostsController do
     end
   end
 
-  describe '#new' do
-    it 'should show new post form to admin' do
-      sign_in users[:admin]
-      get :new
-      expect(response).to have_http_status(200).and render_template 'new'
-      expect(response.body).to match 'New post'
-    end
-
-    it 'should show new post form to moderator' do
-      sign_in users[:moderator]
-      get :new
-      expect(response).to have_http_status(200).and render_template 'new'
-      expect(response.body).to match 'New post'
-    end
-
-    it 'should show new post form to user' do
-      sign_in users[:user]
+  shared_examples 'new post' do |role|
+    it "with role '#{role}'" do
+      sign_in users[role.to_sym]
       get :new
       expect(response).to have_http_status(200).and render_template 'new'
       expect(response.body).to match 'New post'
     end
   end
+  describe '#new' do
+    User.roles.keys.each { |role| it_behaves_like 'new post', role }
+  end
+  #   it 'should show new post form to admin' do
+  #     sign_in users[:admin]
+  #     get :new
+  #     expect(response).to have_http_status(200).and render_template 'new'
+  #     expect(response.body).to match 'New post'
+  #   end
+
+  #   it 'should show new post form to moderator' do
+  #     sign_in users[:moderator]
+  #     get :new
+  #     expect(response).to have_http_status(200).and render_template 'new'
+  #     expect(response.body).to match 'New post'
+  #   end
+
+  #   it 'should show new post form to user' do
+  #     sign_in users[:user]
+  #     get :new
+  #     expect(response).to have_http_status(200).and render_template 'new'
+  #     expect(response.body).to match 'New post'
+  #   end
+  # end
 
 
   describe '#create' do

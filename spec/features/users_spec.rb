@@ -74,9 +74,43 @@ feature 'users', js: true do
     end
   end
 
-  context 'edit user' do
-    scenario 'correct case' do
+  context 'edit user by himself' do
+    scenario 'correct case for user' do
       user = create :user
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      expect(page).to have_link 'edit'
+      click_on 'edit'
+      sleep 1
+      expect(page.body).to match "Edit User ##{user.id}"
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'user[email]', with: 'newemail@name.new'
+      find('input[value="update"]').click
+      expect(page.body).to match "User ##{user.id}"
+      expect(page.body).to match 'newemail@name.new'
+      expect(page.body).to match user.name
+    end
+
+    scenario 'correct case for admin' do
+      user = create :user, :admin
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      expect(page).to have_link 'edit'
+      click_on 'edit'
+      sleep 1
+      expect(page.body).to match "Edit User ##{user.id}"
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'user[email]', with: 'newemail@name.new'
+      find('input[value="update"]').click
+      expect(page.body).to match "User ##{user.id}"
+      expect(page.body).to match 'newemail@name.new'
+      expect(page.body).to match user.name
+    end
+
+    scenario 'correct case for moderator' do
+      user = create :user, :moderator
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
@@ -108,6 +142,51 @@ feature 'users', js: true do
       expect(page.body).to match 'wrong_email'
       expect(page.body).to match user.name
       expect(page.find('.flash-error').text).not_to be_empty
+    end
+  end
+
+  context 'edit other user' do
+    scenario 'correct case for user' do
+      login_as create(:user, :user)
+      user = create :user, :admin
+      visit '/users'
+      expect(page).not_to have_link user.id
+    end
+    
+    scenario 'correct case for admin' do
+      login_as create(:user, :admin)
+      user = create :user
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      expect(page).to have_link 'edit'
+      click_on 'edit'
+      sleep 1
+      expect(page.body).to match "Edit User ##{user.id}"
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'user[email]', with: 'newemail@name.new'
+      find('input[value="update"]').click
+      expect(page.body).to match "User ##{user.id}"
+      expect(page.body).to match 'newemail@name.new'
+      expect(page.body).to match user.name
+    end
+
+    scenario 'correct case for moderator' do
+      login_as create(:user, :moderator)
+      user = create :user
+      visit '/users'
+      expect(page).to have_link user.id
+      click_on user.id
+      expect(page).to have_link 'edit'
+      click_on 'edit'
+      sleep 1
+      expect(page.body).to match "Edit User ##{user.id}"
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'user[email]', with: 'newemail@name.new'
+      find('input[value="update"]').click
+      expect(page.body).to match "User ##{user.id}"
+      expect(page.body).to match 'newemail@name.new'
+      expect(page.body).to match user.name
     end
   end
 end
