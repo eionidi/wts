@@ -91,9 +91,7 @@ feature 'posts', js: true do
       click_on 'Write post'
       expect(page).to have_field 'post[title]'
       expect(page).to have_field 'post[content]'
-      expect(page).to have_selector 'select[name="post[author_id]"]'
       expect(page).to have_selector 'input[value="create"]'
-      find('select[name="post[author_id]"]').click
       page.fill_in 'post[title]', with: 'a'
       page.fill_in 'post[content]', with: 'My first post'
       find('input[value="create"]').click
@@ -126,7 +124,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      #expect(page).not_to have_link 'delete' 
+      #expect(page).not_to have_link 'delete'
     end
 
     scenario 'correct case for user' do
@@ -136,7 +134,7 @@ feature 'posts', js: true do
       click_on post.title
       sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
-      #expect(page).not_to have_link 'delete' 
+      #expect(page).not_to have_link 'delete'
     end
   end
 

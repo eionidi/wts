@@ -9,7 +9,7 @@
     <br/>
     <%= f.text_field :name, required: true, maxlength: 255 %>
   </div>
-  <% if role %>
+  <% if can? :set_role, user %>
     <%= f.label :role %>
     <%= f.select :role, options_for_select(User.roles, user[:role]) %>
   <% end %>
