@@ -27,8 +27,7 @@ describe PostsController do
   let(:post_params) do
     {
       title: Faker::Lorem.sentence,
-      content: Faker::Lorem.paragraph,
-      author: create(:user)
+      content: Faker::Lorem.paragraph
       #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
@@ -122,32 +121,32 @@ describe PostsController do
   describe '#create' do
     it 'admin should create post' do
       sign_in users[:admin]
-      expect { post :create, post_attrs}.to change { Post.count }.by 1
-      expect(response).to redirect_to '/posts/#{post.id}'
-      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
+      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
+      post = Post.last
+      expect(response).to redirect_to "/posts/#{post.id}"
+      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
     end
 
     it 'moderator should create post' do
       sign_in users[:moderator]
-      expect { post :create, post_attrs}.to change { Post.count }.by 1
-      expect(response).to redirect_to '/posts/#{post.id}'
-      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
+      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
+      post = Post.last
+      expect(response).to redirect_to "/posts/#{post.id}"
+      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
     end
 
     it 'user should create post' do
       sign_in users[:user]
-      expect { post :create, post_attrs}.to change { Post.count }.by 1
-      expect(response).to redirect_to '/posts/#{post.id}'
-      expect(flash.now[:notice]).to eq "Post ##{@post.id} created!"
+      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
+      post = Post.last
+      expect(response).to redirect_to "/posts/#{post.id}"
+      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
     end
 
     it 'should save with image' do
-      sign_in user
+      sign_in users.values.sample
       expect { post :create,
-               post: { title: Faker::Lorem.sentence,
-                       content: Faker::Lorem.paragraph,
-                       author_id: user.id,
-                       image: fixture_file_upload('fixtures/post_image.png', 'image/png') } }.
+               post: post_attrs.merge(image: fixture_file_upload('fixtures/post_image.png', 'image/png')) }.
         to change { Post.count }.by 1
       expect(Post.last.image).to be_exists
     end
@@ -206,7 +205,6 @@ describe PostsController do
   describe '#update' do
     User.roles.keys.each { |role| it_behaves_like 'update own post', role }
 
-
     it 'user should not update someones post' do
       sign_in users[:user]
       post = create :post, post_attrs
@@ -253,6 +251,6 @@ describe PostsController do
       post_not_updated post
       expect(response).to have_http_status(404)
     end
-    %i(title content author_id).each { |attr_name| it_behaves_like 'update post', attr_name }
+    %i(title content).each { |attr_name| it_behaves_like 'update post', attr_name }
   end
 end

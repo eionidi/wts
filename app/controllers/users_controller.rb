@@ -18,7 +18,8 @@ class UsersController < ApplicationController
 
   def update
     user_params = params.require(:user).permit(:email, :name, :role)
-    if @user.update user_params.merge(role: user_params[:role].to_i)
+    user_params = user_params.merge(role: user_params[:role].to_i) if user_params[:role].present?
+    if @user.update user_params
       flash.now[:notice] = "User ##{@user.id} updated!"
       redirect_to user_path(@user)
     else
