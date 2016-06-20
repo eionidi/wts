@@ -19,16 +19,13 @@ describe PostsController do
   let(:post_attrs) do
     {
       title: Faker::Lorem.sentence,
-      content: Faker::Lorem.paragraph,
-      author: create(:user)
-      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
+      content: Faker::Lorem.paragraph
     }
   end
   let(:post_params) do
     {
       title: Faker::Lorem.sentence,
       content: Faker::Lorem.paragraph
-      #image: fixture_file_upload('fixtures/post_image.png', 'image/png')
     }
   end
 
@@ -95,28 +92,6 @@ describe PostsController do
   describe '#new' do
     User.roles.keys.each { |role| it_behaves_like 'new post', role }
   end
-  #   it 'should show new post form to admin' do
-  #     sign_in users[:admin]
-  #     get :new
-  #     expect(response).to have_http_status(200).and render_template 'new'
-  #     expect(response.body).to match 'New post'
-  #   end
-
-  #   it 'should show new post form to moderator' do
-  #     sign_in users[:moderator]
-  #     get :new
-  #     expect(response).to have_http_status(200).and render_template 'new'
-  #     expect(response.body).to match 'New post'
-  #   end
-
-  #   it 'should show new post form to user' do
-  #     sign_in users[:user]
-  #     get :new
-  #     expect(response).to have_http_status(200).and render_template 'new'
-  #     expect(response.body).to match 'New post'
-  #   end
-  # end
-
 
   describe '#create' do
     it 'admin should create post' do
