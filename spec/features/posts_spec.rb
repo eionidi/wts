@@ -126,6 +126,7 @@ feature 'posts', js: true do
     end
 
     scenario 'correct case for user' do
+      login_as create(:user, :user)
       post = create :post, :with_user
       visit '/posts'
       expect(page).to have_link post.title

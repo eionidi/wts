@@ -19,7 +19,8 @@ describe PostsController do
   let(:post_attrs) do
     {
       title: Faker::Lorem.sentence,
-      content: Faker::Lorem.paragraph
+      content: Faker::Lorem.paragraph,
+      author: create(:user)
     }
   end
   let(:post_params) do
