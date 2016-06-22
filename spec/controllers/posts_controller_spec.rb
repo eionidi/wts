@@ -94,30 +94,18 @@ describe PostsController do
     User.roles.keys.each { |role| it_behaves_like 'new post', role }
   end
 
+  shared_examples 'create post' do
+    it "with role '#{role}'" do
+      sign_in users[role.to_sym]
+      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
+      post = Post.last
+      expect(response).to redirect_to "/posts/#{post.id}"
+      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
+    end
+
   describe '#create' do
-    it 'admin should create post' do
-      sign_in users[:admin]
-      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
-      post = Post.last
-      expect(response).to redirect_to "/posts/#{post.id}"
-      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
-    end
-
-    it 'moderator should create post' do
-      sign_in users[:moderator]
-      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
-      post = Post.last
-      expect(response).to redirect_to "/posts/#{post.id}"
-      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
-    end
-
-    it 'user should create post' do
-      sign_in users[:user]
-      expect { post :create, post: post_attrs }.to change { Post.count }.by 1
-      post = Post.last
-      expect(response).to redirect_to "/posts/#{post.id}"
-      expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
-    end
+    User.roles.keys.each { |role| it_behaves_like 'create post', role }
+  end
 
     it 'should save with image' do
       sign_in users.values.sample

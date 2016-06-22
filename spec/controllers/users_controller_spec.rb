@@ -43,13 +43,6 @@ describe UsersController do
   before(:each) { sign_in(users[:admin]) }
 
   describe '#index' do
-    it 'test user index' do
-      sign_in users[:user]
-      users.values.each(&:reload)
-      get :index
-      expect(response).to redirect_to '/'
-    end
-
     it 'should show list of users to admin' do
       users.values.each(&:reload)
       get :index

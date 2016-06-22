@@ -14,14 +14,7 @@ feature 'users', js: true do
     expect(page.body).to match user.name
   end
 
-
-  before(:each) { login_as user }
-
-  scenario 'list of users' do
-    visit '/users'
-    expect(page).to have_selector 'header'
-    expect(page.find('header').text).to eq 'List of Users'
-  end
+  before(:each) { login_as user}
 
   scenario 'list of users' do
     login_as create(:user, :user)
@@ -77,14 +70,17 @@ feature 'users', js: true do
 
   context 'edit user by himself' do
     scenario 'correct case for user' do
-      user = create :user
-      visit '/users'
-      expect(page).to have_link user.id
-      click_on user.id
+      user = create(:user, :user)
+      login_as user
+      # user = create :user
+      visit "/users/#{user.id}"
+      # expect(page).to have_link user.id
+      # click_on user.id
+      puts page.body
       expect(page).to have_link 'edit'
       click_on 'edit'
       sleep 1
-      expect(page.body).to match "Edit User ##{user.id}"
+      expect(page.body).to match "Edit User"
       expect(page).to have_selector 'input[value="update"]'
       page.fill_in 'user[email]', with: 'newemail@name.new'
       find('input[value="update"]').click
@@ -94,7 +90,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for admin' do
-      user = create :user, :admin
+      login_as create(:user, :admin)
+      #user = create :user, :admin
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
@@ -111,7 +108,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for moderator' do
-      user = create :user, :moderator
+      login_as create(:user, :moderator)
+      #user = create :user, :moderator
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
