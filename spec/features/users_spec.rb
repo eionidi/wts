@@ -90,8 +90,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for admin' do
-      login_as create(:user, :admin)
-      #user = create :user, :admin
+      user = create(:user, :admin)
+      login_as user
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
@@ -108,8 +108,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for moderator' do
-      login_as create(:user, :moderator)
-      #user = create :user, :moderator
+      user = create(:user, :moderator)
+      login_as user
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
