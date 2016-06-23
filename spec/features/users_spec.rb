@@ -88,12 +88,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for admin' do
-<<<<<<< HEAD
-      user = create(:user, :admin)
-=======
       password = Faker::Internet.password(8)
       user = create(:user, :admin, password: password, password_confirmation: password)
->>>>>>> 8153b2541346d4565f4b2eebb90104f9fc27d737
       login_as user
       visit '/users'
       expect(page).to have_link user.id
@@ -112,12 +108,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for moderator' do
-<<<<<<< HEAD
-      user = create(:user, :moderator)
-=======
       password = Faker::Internet.password(8)
       user = create(:user, :moderator, password: password, password_confirmation: password)
->>>>>>> 8153b2541346d4565f4b2eebb90104f9fc27d737
       login_as user
       visit '/users'
       expect(page).to have_link user.id
