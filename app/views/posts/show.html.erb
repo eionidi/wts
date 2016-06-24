@@ -6,14 +6,27 @@
   <tr><td>Image:</td><td><%= image_tag @post.image.url(:show) %></td></tr>
   <tr>
     <td>Author:</td>
-    <td><%= link_to_if can?(:show, @post.author), @post.author_name, user_path(@post.author) %></td>
+    <td>
+      <%= link_to_if can?(:show, @post.author), @post.author_name, user_path(@post.author) %>
+      <% if @post.author_role.present? %>
+        (<%= @post.author_role %>)
+      <% end %>
+    </td>
   </tr>
-  <% if @post.author_role.present? %>
-    <tr><td></td><td>(<%= @post.author_role %>)</td></tr>
-  <% end %>
   <tr><td>Created at:</td><td><%= format_datetime @post.created_at %></td></tr>
   <tr><td>Updated at:</td><td><%= format_datetime @post.updated_at %></td></tr>
   <tr><td>Content:</td><td><%= @post.content %></td></tr>
+  <% if @post.comments.exists? %>
+    <% @post.comments.order(id: :desc).each do |comment| %>
+      <tr>
+        <td><%= link_to_if can?(:show, comment.author), comment.author.name, user_path(comment.author) %></td>
+        <td></td>
+      </tr>
+    <% end %>
+  <% end %>
+  <% if can? :new, @post.comments.new %>
+    <tr><td></td><td><%= link_to 'add comment', new_post_comment_path(@post) %></td></tr>
+  <% end %>
   <% if can? :edit, @post %>
     <tr><td></td><td><%= link_to 'edit', edit_post_path(@post) %></td></tr>
   <% end %>

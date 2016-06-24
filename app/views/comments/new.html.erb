@@ -1,0 +1,3 @@
+<% content_for(:header) { 'New comment' } %>
+
+<%= render partial: 'form', locals: { comment: @comment, action: :create } %>
