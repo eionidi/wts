@@ -160,6 +160,16 @@ describe UsersController do
       user_not_updated user
       expect(response).to have_http_status(404)
     end
+
+    it 'should update role by admin' do
+      sign_in users[:admin]
+      user = create :user, :user
+      patch :update, role: user_params.merge(attr_name => 'moderator')#:role=>"2"
+      expect(User.roles[user.role]).to eq user_params[:role]
+      expect(response).to redirect_to "/users/#{user.id}"
+      expect(flash[:notice]).to eq "User ##{user.id} updated!"
+    end
+
     %i(name email).each { |attr_name| it_behaves_like 'update user', attr_name }
   end
 end

@@ -101,6 +101,7 @@ describe PostsController do
       post = Post.last
       expect(response).to redirect_to "/posts/#{post.id}"
       expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
+      expect(post.author).to eq users
     end
 
   describe '#create' do
