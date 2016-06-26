@@ -104,6 +104,10 @@ feature 'users', js: true do
     scenario "correct case with role '#{role}'" do
       login_as users[role.to_sym]
       password = Faker::Internet.password(8)
+      # EDIT USER BY HIMSELF!!!
+      # You logged in as `users[role.to_sym]` and try to edit `user`
+      # Where is 'himself'!?!?!
+      # You should login as and edit the same user!
       user = create(:user, :user, password: password, password_confirmation: password)
       visit "/users/#{user.id}"
       expect(page).to have_link 'edit'
@@ -124,7 +128,7 @@ feature 'users', js: true do
   context 'edit user by himself' do
     User.roles.keys.each { |role| it_behaves_like 'edit user by himself', role }
   end
-  
+
 
   # context 'edit user by himself' do
   #   scenario 'correct case for user' do
@@ -216,7 +220,7 @@ feature 'users', js: true do
       visit '/users'
       expect(page).not_to have_link user.id
     end
-    
+
     scenario 'correct case for admin' do
       login_as create(:user, :admin)
       user = create :user
@@ -231,6 +235,8 @@ feature 'users', js: true do
       #expect(page).to have_selector 'select[name="user_role"]'
       expect(page).to have_select('user_role', selected: 'user')# как его поменять не нашла, но ниже пыталась!
       page.fill_in 'user[email]', with: 'newemail@name.new'
+      # Oh! I'll try to help you...
+      # http://lmgtfy.com/?q=rspec+capybara+how+to+select+option+in+combobox
       #find_by_id('user_role').find("option[value='2']").click и это не работает
       find('input[value="update"]').click
       #find('select[name="user_role"]').click не работает!
@@ -259,4 +265,3 @@ feature 'users', js: true do
     end
   end
 end
-

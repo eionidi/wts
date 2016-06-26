@@ -164,6 +164,8 @@ describe UsersController do
     it 'should update role by admin' do
       sign_in users[:admin]
       user = create :user, :user
+      # OK, everytime you update user as `patch :update, id: user.id, user: user_params`
+      # WHY you try to update him now as `patch :update, role: user_params`???
       patch :update, role: user_params.merge(attr_name => 'moderator')#:role=>"2"
       expect(User.roles[user.role]).to eq user_params[:role]
       expect(response).to redirect_to "/users/#{user.id}"
