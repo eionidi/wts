@@ -106,6 +106,10 @@ feature 'users', js: true do
       password = Faker::Internet.password(8)
       users = create(:user, :user, password: password, password_confirmation: password)
       visit "/users/#{users.id}"
+      # EDIT USER BY HIMSELF!!!
+      # You logged in as `users[role.to_sym]` and try to edit `user`
+      # Where is 'himself'!?!?!
+      # You should login as and edit the same user!
       expect(page).to have_link 'edit'
       click_on 'edit'
       sleep 1
@@ -123,8 +127,6 @@ feature 'users', js: true do
 
   context 'edit user by himself' do
     User.roles.keys.each { |role| it_behaves_like 'edit user by himself', role }
-  
-  
 
   # context 'edit user by himself' do
   #   scenario 'correct case for user' do
@@ -216,7 +218,7 @@ feature 'users', js: true do
       visit '/users'
       expect(page).not_to have_link user.id
     end
-    
+
     scenario 'correct case for admin' do
       login_as create(:user, :admin)
       user = create :user
@@ -259,4 +261,3 @@ feature 'users', js: true do
     end
   end
 end
-
