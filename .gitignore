@@ -1,4 +1,5 @@
 /.bundle
+/vendor/bundle
 
 /db/*.sqlite3
 /db/*.sqlite3-journal
@@ -7,3 +8,5 @@
 !/log/.keep
 /public/paperclip/*
 /tmp
+/.DS_Store
+/*/.DS_Store

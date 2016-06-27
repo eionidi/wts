@@ -28,6 +28,8 @@ WebMock.disable_net_connect!(allow_localhost: true)
 
 ActiveRecord::Migration.maintain_test_schema!
 
+RSpec::Matchers.define_negated_matcher :not_change, :change
+
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/factories"
 
