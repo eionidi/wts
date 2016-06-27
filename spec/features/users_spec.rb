@@ -106,17 +106,13 @@ feature 'users', js: true do
       password = Faker::Internet.password(8)
       users = create(:user, :user, password: password, password_confirmation: password)
       visit "/users/#{users.id}"
-      # EDIT USER BY HIMSELF!!!
-      # You logged in as `users[role.to_sym]` and try to edit `user`
-      # Where is 'himself'!?!?!
-      # You should login as and edit the same user!
       expect(page).to have_link 'edit'
       click_on 'edit'
       sleep 1
       expect(page.body).to match "Edit User"
-      expect(page).to have_selector 'input[value="Update"]'
-      page.fill_in 'users[name]', with: 'new_name'
-      page.fill_in 'users[current_password]', with: password
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'user[name]', with: 'new_name'
+      page.fill_in 'user[current_password]', with: password
       find('input[value="Update"]').click
       expect(page.find('header').text).to eq 'Posts'
       expect(page).to have_current_path("/")
@@ -230,12 +226,11 @@ feature 'users', js: true do
       sleep 1
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
-      #expect(page).to have_selector 'select[name="user_role"]'
-      expect(page).to have_select('user_role', selected: 'user')# как его поменять не нашла, но ниже пыталась!
+      expect(page).to have_selector 'select[id="user_role"]'
+      select 'moderator', from: "user_role"
       page.fill_in 'user[email]', with: 'newemail@name.new'
-      #find_by_id('user_role').find("option[value='2']").click и это не работает
       find('input[value="update"]').click
-      #find('select[name="user_role"]').click не работает!
+      
       expect(page.body).to match "User ##{user.id}"
       expect(page.body).to match 'newemail@name.new'
       expect(page.body).to match user.name
@@ -252,7 +247,7 @@ feature 'users', js: true do
       sleep 1
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
-      #expect(page).not_to have_selector 'select[name="user_role"]' хз работает это или нет
+      expect(page).not_to have_selector 'select[id="user_role"]'
       page.fill_in 'user[email]', with: 'newemail@name.new'
       find('input[value="update"]').click
       expect(page.body).to match "User ##{user.id}"
