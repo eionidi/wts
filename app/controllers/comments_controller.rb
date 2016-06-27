@@ -22,15 +22,24 @@ class CommentsController < ApplicationController
   end
 
   def show
-    @post = @post.includes :comments
   end
 
   def edit
   end
 
   def update
+    if @comment.update params.require(:comment).permit(:content)
+      @comment.update last_updated_by: current_user
+      flash.now[:notice] = "Comment ##{@comment.id} updated!"
+      redirect_to post_path(@post)
+    else
+      flash.now[:error] = "Errors: #{@comment.errors.full_messages.join ', '}"
+      render :edit
+    end
   end
 
   def destroy
+    @comment.destroy
+    redirect_to post_path(@post)
   end
 end

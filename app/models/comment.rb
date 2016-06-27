@@ -8,4 +8,8 @@ class Comment < ActiveRecord::Base
 
   validates :author, :post, presence: true
   validates :content, presence: true, length: { in: 3..1024 }
+
+  def last_actor
+    last_updated_by ? last_updated_by : author
+  end
 end
