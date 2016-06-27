@@ -71,8 +71,8 @@ feature 'users', js: true do
     end
 
     scenario 'correct case for user' do
-      #login_as create(:user, :user)
       user = create(:user, :user)
+      login_as user
       visit "/users/#{user.id}"
       sleep 1
       expect(page.find('header').text).to eq "User ##{user.id}" 
@@ -104,89 +104,25 @@ feature 'users', js: true do
     scenario "correct case with role '#{role}'" do
       login_as users[role.to_sym]
       password = Faker::Internet.password(8)
-      users = create(:user, :user, password: password, password_confirmation: password)
-      visit "/users/#{users.id}"
+      users[role.to_sym].update(password: password, password_confirmation: password)
+      visit "/users/#{users[role.to_sym].id}"
       expect(page).to have_link 'edit'
       click_on 'edit'
       sleep 1
       expect(page.body).to match "Edit User"
-      expect(page).to have_selector 'input[value="update"]'
+      expect(page).to have_selector 'input[value="Update"]'
       page.fill_in 'user[name]', with: 'new_name'
       page.fill_in 'user[current_password]', with: password
       find('input[value="Update"]').click
       expect(page.find('header').text).to eq 'Posts'
       expect(page).to have_current_path("/")
-      visit "/users/#{users.id}"
+      visit "/users/#{users[role.to_sym].id}"
       expect(page.body).to match 'new_name'
     end
   end
 
   context 'edit user by himself' do
     User.roles.keys.each { |role| it_behaves_like 'edit user by himself', role }
-
-  # context 'edit user by himself' do
-  #   scenario 'correct case for user' do
-  #     password = Faker::Internet.password(8)
-  #     user = create(:user, :user, password: password, password_confirmation: password)
-  #     login_as user
-  #     visit "/users/#{user.id}"
-  #     expect(page).to have_link 'edit'
-  #     click_on 'edit'
-  #     sleep 1
-  #     expect(page.body).to match "Edit User"
-  #     expect(page).to have_selector 'input[value="Update"]'
-  #     page.fill_in 'user[name]', with: 'new_name'
-  #     page.fill_in 'user[current_password]', with: password
-  #     find('input[value="Update"]').click
-  #     expect(page.find('header').text).to eq 'Posts'
-  #     expect(page).to have_current_path("/")
-  #     visit "/users/#{user.id}"
-  #     expect(page.body).to match 'new_name'
-  #expect(page.find('.flash-error').text).not_to be_empty
-  #     #expect(flash.now[:notice]).to eq "Your account has been updated sucssefuly."
-  #   end
-
-  #   scenario 'correct case for admin' do
-  #     password = Faker::Internet.password(8)
-  #     user = create(:user, :admin, password: password, password_confirmation: password)
-  #     login_as user
-  #     visit '/users'
-  #     expect(page).to have_link user.id
-  #     click_on user.id
-  #     expect(page).to have_link 'edit'
-  #     click_on 'edit'
-  #     sleep 1
-  #     expect(page.body).to match "Edit User"
-  #     expect(page).to have_selector 'input[value="Update"]'
-  #     page.fill_in 'user[name]', with: 'new_name'
-  #     page.fill_in 'user[current_password]', with: password
-  #     find('input[value="Update"]').click
-  #     expect(page.find('header').text).to eq 'Posts'
-  #     expect(page).to have_current_path("/")
-  #     visit "/users/#{user.id}"
-  #     expect(page.body).to match 'new_name'
-  #   end
-
-  #   scenario 'correct case for moderator' do
-  #     password = Faker::Internet.password(8)
-  #     user = create(:user, :moderator, password: password, password_confirmation: password)
-  #     login_as user
-  #     visit '/users'
-  #     expect(page).to have_link user.id
-  #     click_on user.id
-  #     expect(page).to have_link 'edit'
-  #     click_on 'edit'
-  #     sleep 1
-  #     expect(page.body).to match "Edit User"
-  #     expect(page).to have_selector 'input[value="Update"]'
-  #     page.fill_in 'user[name]', with: 'new_name'
-  #     page.fill_in 'user[current_password]', with: password
-  #     find('input[value="Update"]').click
-  #     expect(page.find('header').text).to eq "Posts"
-  #     expect(page).to have_current_path("/")
-  #     visit "/users/#{user.id}"
-  #     expect(page.body).to match 'new_name'
-  #   end
 
     scenario 'incorrect case' do
       user = create :user
@@ -226,8 +162,8 @@ feature 'users', js: true do
       sleep 1
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
-      expect(page).to have_selector 'select[id="user_role"]'
-      select 'moderator', from: "user_role"
+      expect(page).to have_selector 'select[name="user[role]"]'
+      select 'moderator', from: "user[role]"
       page.fill_in 'user[email]', with: 'newemail@name.new'
       find('input[value="update"]').click
       

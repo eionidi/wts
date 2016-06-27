@@ -161,11 +161,11 @@ describe UsersController do
       expect(response).to have_http_status(404)
     end
 
-    it 'should update role by admin' do |attr_name|
+    it 'should update role by admin' do
       sign_in users[:admin]
       user = create :user, :user
-      patch :update, id: user.id, user: user_params.merge(attr_name => 'moderator')
-      expect(User.roles[user.role]).to eq user_params[:role]
+      patch :update, id: user.id, user: user_params.merge(role: User.roles['moderator'])
+      expect(user.reload.role).to eq 'moderator'
       expect(response).to redirect_to "/users/#{user.id}"
       expect(flash[:notice]).to eq "User ##{user.id} updated!"
     end
