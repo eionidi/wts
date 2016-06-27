@@ -3,7 +3,7 @@ class Comment < ActiveRecord::Base
   belongs_to :post
   belongs_to :last_updated_by, class_name: User
 
-  has_attached_file :file_attach, url: "/paperclip/#{Rails.env}/comment_attach/:id/:filename.:extension"
+  has_attached_file :file_attach, url: "/paperclip/#{Rails.env}/comment_attach/:id/:filename"
   do_not_validate_attachment_file_type :file_attach
 
   validates :author, :post, presence: true

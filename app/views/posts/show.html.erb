@@ -53,4 +53,6 @@
       <tr><td></td><td><%= link_to 'add comment', new_post_comment_path(@post) %></td></tr>
     <% end %>
   </table>
+<% elsif can? :new, @post.comments.new %>
+  <tr><td></td><td><%= link_to 'add comment', new_post_comment_path(@post) %></td></tr>
 <% end %>

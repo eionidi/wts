@@ -9,13 +9,13 @@ describe MyArtecChecker do
       email = 'asdfasdf'
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{email}").
         to_return(status: 200, body: { 'exist' => false }.to_json)
-      expect(JSON.parse(checker.check_user(email))).to eq('exist' => false)
+      expect(checker.check_user(email)).to be_nil
     end
     it 'should return true' do
       email = 'malexeev@artec-group.com'
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{email}").
         to_return(status: 200, body: { 'exist' => true }.to_json)
-      expect(JSON.parse(checker.check_user('malexeev@artec-group.com'))).to eq('exist' => true)
+      expect(checker.check_user(email)).not_to be_nil
     end
   end
 end
