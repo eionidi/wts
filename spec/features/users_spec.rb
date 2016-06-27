@@ -15,7 +15,6 @@ feature 'users', js: true do
     visit '/users'
     expect(page).to have_link user.id
     click_on user.id
-    sleep 1
     expect(page.find('header').text).to eq "User ##{user.id}"
     expect(page.body).to match user.email
     expect(page.body).to match user.name
@@ -48,7 +47,6 @@ feature 'users', js: true do
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
-      sleep 1
       expect(page.find('header').text).to eq "User ##{user.id}"
       expect(page).to have_link 'delete'
       click_on 'delete'
@@ -63,7 +61,6 @@ feature 'users', js: true do
       visit '/users'
       expect(page).to have_link user.id
       click_on user.id
-      sleep 1
       expect(page.find('header').text).to eq "User ##{user.id}"
       expect(page).not_to have_link 'delete'
       expect(page.body).to match "<tr><td>E-Mail:</td><td>#{user.email}</td></tr>"
@@ -74,8 +71,7 @@ feature 'users', js: true do
       user = create(:user, :user)
       login_as user
       visit "/users/#{user.id}"
-      sleep 1
-      expect(page.find('header').text).to eq "User ##{user.id}" 
+      expect(page.find('header').text).to eq "User ##{user.id}"
       expect(page).not_to have_link 'delete'
       expect(page.body).to match "<tr><td>E-Mail:</td><td>#{user.email}</td></tr>"
       expect(page.body).to match "<tr><td>Name:</td><td>#{user.name}</td></tr>"
@@ -108,7 +104,6 @@ feature 'users', js: true do
       visit "/users/#{users[role.to_sym].id}"
       expect(page).to have_link 'edit'
       click_on 'edit'
-      sleep 1
       expect(page.body).to match "Edit User"
       expect(page).to have_selector 'input[value="Update"]'
       page.fill_in 'user[name]', with: 'new_name'
@@ -131,7 +126,6 @@ feature 'users', js: true do
       click_on user.id
       expect(page).to have_link 'edit'
       click_on 'edit'
-      sleep 1
       expect(page.find('header').text).to eq "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       page.fill_in 'user[email]', with: 'wrong_email'
@@ -159,14 +153,12 @@ feature 'users', js: true do
       click_on user.id
       expect(page).to have_link 'edit'
       click_on 'edit'
-      sleep 1
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       expect(page).to have_selector 'select[name="user[role]"]'
       select 'moderator', from: "user[role]"
       page.fill_in 'user[email]', with: 'newemail@name.new'
       find('input[value="update"]').click
-      
       expect(page.body).to match "User ##{user.id}"
       expect(page.body).to match 'newemail@name.new'
       expect(page.body).to match user.name
@@ -180,7 +172,6 @@ feature 'users', js: true do
       click_on user.id
       expect(page).to have_link 'edit'
       click_on 'edit'
-      sleep 1
       expect(page.body).to match "Edit User ##{user.id}"
       expect(page).to have_selector 'input[value="update"]'
       expect(page).not_to have_selector 'select[id="user_role"]'

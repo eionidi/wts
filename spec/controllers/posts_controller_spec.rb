@@ -94,19 +94,19 @@ describe PostsController do
     User.roles.keys.each { |role| it_behaves_like 'new post', role }
   end
 
-  shared_examples 'create post' do
+  shared_examples 'create post' do |role|
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
       expect { post :create, post: post_attrs }.to change { Post.count }.by 1
       post = Post.last
       expect(response).to redirect_to "/posts/#{post.id}"
       expect(flash.now[:notice]).to eq "Post ##{post.id} created!"
-      expect(post.author).to eq users
+      expect(post.author).to eq users[role.to_sym]
     end
+  end
 
   describe '#create' do
     User.roles.keys.each { |role| it_behaves_like 'create post', role }
-  end
 
     it 'should save with image' do
       sign_in users.values.sample
@@ -128,21 +128,21 @@ describe PostsController do
     it 'admin should not destroy post w/wrong id' do
       sign_in users[:admin]
       posts.values.each(&:reload)
-      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to change { Post.count }.by 0
+      expect { delete :destroy, id: (Post.last.try(:id) || 0) + 1 }.to not_change { Post.count }
       expect(response).to have_http_status(404)
     end
 
     it 'user should not destroy post' do
       sign_in users[:user]
-      posts.values.each(&:reload)
-      expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
+      post = create :post, post_attrs
+      expect { delete :destroy, id: post.id }.to not_change { Post.count }
       expect(response).to redirect_to '/'
     end
 
     it 'moderator should not destroy post' do
       sign_in users[:moderator]
-      posts.values.each(&:reload)
-      expect { delete :destroy, id: (Post.last.try(:id) || 0) }.to change { Post.count }.by 0
+      post = create :post, post_attrs
+      expect { delete :destroy, id: post.id }.to not_change { Post.count }
       expect(response).to redirect_to '/'
     end
   end

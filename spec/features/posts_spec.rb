@@ -9,7 +9,6 @@ feature 'posts', js: true do
     click_on post.title
     expect(page).to have_link 'edit'
     click_on 'edit'
-    sleep 1
     expect(page.body).to match "Edit post ##{post.id}"
     expect(page).to have_selector 'input[value="update"]'
     page.fill_in 'post[title]', with: 'Updated post'
@@ -24,7 +23,6 @@ feature 'posts', js: true do
     click_on post.title
     expect(page).to have_link 'edit'
     click_on 'edit'
-    sleep 1
     expect(page.body).to match "Edit post ##{post.id}"
     expect(page).to have_selector 'input[value="update"]'
     page.fill_in 'post[title]', with: 'a'
@@ -38,7 +36,6 @@ feature 'posts', js: true do
     visit '/posts'
     expect(page).to have_link 'Write post'
     click_on 'Write post'
-    sleep 1
     expect(page.find('header').text).to eq 'New post'
     expect(page).to have_field 'post[title]'
     expect(page).to have_field 'post[content]'
@@ -105,7 +102,6 @@ feature 'posts', js: true do
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
-      sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
       expect(page).to have_link 'delete'
       click_on 'delete'
@@ -120,7 +116,6 @@ feature 'posts', js: true do
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
-      sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
       expect(page).not_to have_link 'delete'
     end
@@ -131,7 +126,6 @@ feature 'posts', js: true do
       visit '/posts'
       expect(page).to have_link post.title
       click_on post.title
-      sleep 1
       expect(page.find('header').text).to eq "Post ##{post.id}"
       expect(page).not_to have_link 'delete'
     end

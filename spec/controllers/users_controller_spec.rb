@@ -1,5 +1,4 @@
 require 'rails_helper'
-RSpec::Matchers.define_negated_matcher :not_change, :change
 
 describe UsersController do
   let(:users) do
@@ -65,7 +64,7 @@ describe UsersController do
       users.values.each(&:reload)
       get :index
       expect(response).to redirect_to '/'
-      expect(controller.instance_variable_get('@users')).not_to eq User.all
+      expect(controller.instance_variable_get('@users')).to be_empty
     end
 
     it 'should return JSON response' do
@@ -119,7 +118,7 @@ describe UsersController do
     end
 
     it 'should not destroy user' do
-      expect { delete :destroy, id: User.last.id + 1 }.to change { User.count }.by 0
+      expect { delete :destroy, id: User.last.id + 1 }.to not_change { User.count }
       expect(response).to have_http_status(404)
     end
   end
