@@ -1,5 +1,4 @@
 require 'rails_helper'
-RSpec::Matchers.define_negated_matcher :not_change, :change
 
 describe UsersController do
   let(:users) do
@@ -43,19 +42,31 @@ describe UsersController do
   before(:each) { sign_in(users[:admin]) }
 
   describe '#index' do
-    it 'test user index' do
-      sign_in users[:user]
-      users.values.each(&:reload)
-      get :index
-      expect(response).to redirect_to '/'
-    end
-    it 'should show list of users' do
+    it 'should show list of users to admin' do
       users.values.each(&:reload)
       get :index
       expect(response).to have_http_status(200).and render_template 'index'
       expect(response.body).to match 'List of Users'
       expect(controller.instance_variable_get('@users')).to eq User.all
     end
+
+    it 'should show list of users to moderator' do
+      sign_in users[:moderator]
+      users.values.each(&:reload)
+      get :index
+      expect(response).to have_http_status(200).and render_template 'index'
+      expect(response.body).to match 'List of Users'
+      expect(controller.instance_variable_get('@users')).to eq User.all
+    end
+
+    it 'should not show list of users to user' do
+      sign_in users[:user]
+      users.values.each(&:reload)
+      get :index
+      expect(response).to redirect_to '/'
+      expect(controller.instance_variable_get('@users')).to be_empty
+    end
+
     it 'should return JSON response' do
       users.values.each(&:reload)
       get :index, format: :json
@@ -76,6 +87,22 @@ describe UsersController do
 
   describe '#show' do
     User.roles.keys.each { |role| it_behaves_like 'show user', role }
+    it 'should not show user to user' do
+      sign_in users[:user]
+      get :show, id: User.last.id
+      expect(response).to redirect_to '/'
+    end
+
+    it 'should show user to moderator' do
+      sign_in users[:moderator]
+      get :show, id: User.last.id
+      expect(response).to have_http_status(200).and render_template 'show'
+    end
+
+    it 'should show user to admin' do
+      get :show, id: User.last.id
+      expect(response).to have_http_status(200).and render_template 'show'
+    end
 
     it 'should return 404 w/wrong user id' do
       get :show, id: User.last.id + 1
@@ -91,7 +118,7 @@ describe UsersController do
     end
 
     it 'should not destroy user' do
-      expect { delete :destroy, id: User.last.id + 1 }.to change { User.count }.by 0
+      expect { delete :destroy, id: User.last.id + 1 }.to not_change { User.count }
       expect(response).to have_http_status(404)
     end
   end
@@ -132,6 +159,16 @@ describe UsersController do
       user_not_updated user
       expect(response).to have_http_status(404)
     end
+
+    it 'should update role by admin' do
+      sign_in users[:admin]
+      user = create :user, :user
+      patch :update, id: user.id, user: user_params.merge(role: User.roles['moderator'])
+      expect(user.reload.role).to eq 'moderator'
+      expect(response).to redirect_to "/users/#{user.id}"
+      expect(flash[:notice]).to eq "User ##{user.id} updated!"
+    end
+
     %i(name email).each { |attr_name| it_behaves_like 'update user', attr_name }
   end
 end
