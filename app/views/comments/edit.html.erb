@@ -1,0 +1,3 @@
+<% content_for(:header) { "Edit comment ##{@comment.id}" } %>
+
+<%= render partial: 'form', locals: { comment: @comment, action: :update } %>

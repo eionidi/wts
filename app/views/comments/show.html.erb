@@ -1,0 +1,38 @@
+<% content_for(:header) { "Comment ##{@comment.id} on post ##{@post.id}" } %>
+
+<table>
+  <tr><td>ID:</td><td><%= @comment.id %></td></tr>
+  <tr>
+    <td>Author:</td>
+    <td><%= link_to_if can?(:show, @comment.author), @comment.author.name, user_path(@comment.author) %></td>
+  </tr>
+  <tr>
+    <td>Last updated at:</td>
+    <td><%= format_datetime @comment.updated_at %></td>
+  </tr>
+  <tr>
+    <td>Last updated by:</td>
+    <td>
+      <%= link_to_if can?(:show, @comment.last_actor), @comment.last_actor.name, user_path(@comment.last_actor) %>
+    </td>
+    <% ma_url = MyArtecChecker.new.check_user @comment.last_actor.email %>
+    <% if ma_url %>
+      <td><%= link_to 'On MyArtec3D', ma_url %></td>
+    <% end %>
+  </tr>
+  <tr><td>Content:</td><td><%= @comment.content %></td></tr>
+  <tr>
+    <td>Attach:</td>
+    <td>
+      <% if @comment.file_attach.exists? %>
+        <%= link_to @comment.file_attach_file_name, @comment.file_attach.url %>
+      <% end %>
+    </td>
+  </tr>
+  <% if can? :edit, @comment %>
+    <tr><td></td><td><%= link_to 'edit', edit_post_comment_path(@post, @comment) %></td></tr>
+  <% end %>
+  <% if can? :destroy, @comment %>
+    <tr><td></td><td><%= link_to 'delete', post_comment_path(@post, @comment), method: :delete %></td></tr>
+  <% end %>
+</table>

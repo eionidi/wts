@@ -1,0 +1,11 @@
+<%= form_for comment, url: { action: action } do |f| %>
+  <%= f.label :content %>
+  <%= f.text_area :content, required: true, maxlength: 1024, cols: 80 %>
+  <% if action == :create %>
+    <br>
+    <%= f.label :file_attach %>
+    <%= f.file_field :file_attach %>
+  <% end %>
+  <br>
+  <%= f.submit action %>
+<% end %>
