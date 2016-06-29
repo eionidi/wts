@@ -1,3 +1,5 @@
+require 'my_artec_checker'
+
 class CommentsController < ApplicationController
   before_action :authenticate_user!
 
@@ -40,6 +42,7 @@ class CommentsController < ApplicationController
 
   def destroy
     @comment.destroy
+    flash.now[:notice] = "Comment ##{@comment.id} destroyed!"
     redirect_to post_path(@post)
   end
 end
