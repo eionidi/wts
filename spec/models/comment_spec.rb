@@ -15,33 +15,41 @@ describe Comment do
     end
     
     describe 'comments' do
-      it 'should not save comment w/o content' do
-        comment_not_valid Comment.new(post: create(:post, :with_user), content: nil, author: create(:user)), :content
-      end
+      it { should validate_presence_of :content }
+      it { should validate_presence_of :author }
+      it { should validate_presence_of :post }
+      it { should validate_length_of(:content).is_at_least(3) }
+      it { should validate_length_of(:content).is_at_most(1024) }
+      it { should_not allow_value('a' * 2).for(:content) }
+      it { should_not allow_value('a' * 1030).for(:content) }
 
-      it 'should not save comment w/o author' do
-        comment_not_valid Comment.new(post: create(:post, :with_user), content: Faker::Lorem.paragraph), :author
-      end
+      # it 'should not save comment w/o content' do
+      #   comment_not_valid Comment.new(post: create(:post, :with_user), content: nil, author: create(:user)), :content
+      # end
 
-      it 'should not save comment w/o post' do
-        comment_not_valid Comment.new(content: Faker::Lorem.paragraph, author: create(:user)), :post
-      end
+      # it 'should not save comment w/o author' do
+      #   comment_not_valid Comment.new(post: create(:post, :with_user), content: Faker::Lorem.paragraph), :author
+      # end
 
-      it 'should not save short comment' do
-        comment_not_valid Comment.new(content: 'a' * 2, author: create(:user), post: create(:post, :with_user)), :content
-      end
+      # it 'should not save comment w/o post' do
+      #   comment_not_valid Comment.new(content: Faker::Lorem.paragraph, author: create(:user)), :post
+      # end
 
-      it 'should not save long comment' do
-        comment_not_valid Comment.new(content: 'a' * 1030, author: create(:user), post: create(:post, :with_user)), :content
-      end
+      # it 'should not save short comment' do
+      #   comment_not_valid Comment.new(content: 'a' * 2, author: create(:user), post: create(:post, :with_user)), :content
+      # end
 
-      it 'should save comment w/minimal content' do
-        comment_valid Comment.new(content: 'a' * 3, author: create(:user), post: create(:post, :with_user))
-      end
+      # it 'should not save long comment' do
+      #   comment_not_valid Comment.new(content: 'a' * 1030, author: create(:user), post: create(:post, :with_user)), :content
+      # end
 
-      it 'should save comment w/maximum content' do
-        comment_valid Comment.new(content: 'a' * 1024, author: create(:user), post: create(:post, :with_user))
-      end
+      # it 'should save comment w/minimal content' do
+      #   comment_valid Comment.new(content: 'a' * 3, author: create(:user), post: create(:post, :with_user))
+      # end
+
+      # it 'should save comment w/maximum content' do
+      #   comment_valid Comment.new(content: 'a' * 1024, author: create(:user), post: create(:post, :with_user))
+      # end
     end
   end
 
