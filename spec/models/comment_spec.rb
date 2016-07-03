@@ -55,17 +55,19 @@ describe Comment do
 
   context 'association' do
     describe 'comments' do
-      it 'should return comment author' do
-        user = create :user, :user
-        comment = create :comment, author: user
-        expect(comment.author).to eq user
-      end
+      it { should belong_to(:author) }
+      it { should belong_to(:post) }
+      # it 'should return comment author' do
+      #   user = create :user, :user
+      #   comment = create :comment, author: user
+      #   expect(comment.author).to eq user
+      # end
 
-      it 'should return commented post' do
-        post = create(:post, :with_user)
-        comment = create :comment, :with_user, post: post
-        expect(comment.post).to eq post
-      end
+      # it 'should return commented post' do
+      #   post = create(:post, :with_user)
+      #   comment = create :comment, :with_user, post: post
+      #   expect(comment.post).to eq post
+      # end
 
       it 'should return user of last comment' do
         first_user = create :user
