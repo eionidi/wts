@@ -94,11 +94,12 @@ feature 'comments', js: true do
   context 'delete comment' do
     scenario 'correct case for admin' do
       login_as create(:user, :admin)
-      #post = create :post, :with_user
-   	  comment = Comment.create(content: Faker::Lorem.paragraph, post: create(:post, :with_user))
-   	  comment.errors.messages
-      #comment = create :comment, :with_user
+      post = create :post, :with_user
+   	  #comment = Comment.create(content: Faker::Lorem.paragraph, post: create(:post, :with_user))
+      comment = create :comment, :with_user
       visit "/posts/#{post.id}"
+      comment.errors.messages
+      puts(page.body)
       #not found
       expect(page).to have_link comment.content 
       click_on comment.content
@@ -111,6 +112,7 @@ feature 'comments', js: true do
 
     scenario 'correct case for moderator' do
       login_as create(:user, :moderator)
+      post = create :post, :with_user
       comment = create :comment, :with_user
       visit "/posts/#{post.id}"
       expect(page).to have_link comment.content 
@@ -121,6 +123,7 @@ feature 'comments', js: true do
 
     scenario 'correct case for user' do
       login_as create(:user, :user)
+      post = create :post, :with_user
       comment = create :comment, :with_user
       visit "/posts/#{post.id}"
       expect(page).to have_link comment.content 
@@ -174,25 +177,25 @@ feature 'comments', js: true do
     end
   end
 
-  shared_examples 'edit comment' do
-  	scenario "correct case with role '#{role}'"
-      login_as users[role.to_sym]
-      comment = create :comment, :with_user
-      visit "posts/#{post.id}/comments/#{comment.id}"
-      expect(page).to have_link 'edit'
-      click_on 'edit'
-      expect(page.body).to match "Edit comment ##{comment.id}"
-      expect(page).to have_selector 'input[value="update"]'
-      page.fill_in 'comment[content]', with: 'New content'
-      find('input[value="update"]').click
-      expect(page.body).to match "Comment ##{comment.id}"
-      expect(page.body).to match 'Updated comment'
-    end
-  end
+  # shared_examples 'edit comment' do
+  # 	scenario "correct case with role '#{role}'"
+  #     login_as users[role.to_sym]
+  #     comment = create :comment, :with_user
+  #     visit "posts/#{post.id}/comments/#{comment.id}"
+  #     expect(page).to have_link 'edit'
+  #     click_on 'edit'
+  #     expect(page.body).to match "Edit comment ##{comment.id}"
+  #     expect(page).to have_selector 'input[value="update"]'
+  #     page.fill_in 'comment[content]', with: 'New content'
+  #     find('input[value="update"]').click
+  #     expect(page.body).to match "Comment ##{comment.id}"
+  #     expect(page.body).to match 'Updated comment'
+  #   end
+  # end
 
-  context 'edit comment' do
-  	User.roles.keys.each { |role| it_behaves_like 'edit comment', role }
-  end
+  # context 'edit comment' do
+  # 	User.roles.keys.each { |role| it_behaves_like 'edit comment', role }
+  # end
 
 
   context 'edit comment' do
@@ -213,6 +216,7 @@ feature 'comments', js: true do
 
     scenario 'correct case for moderator' do
       login_as create(:user, :moderator)
+      post = create :post, :with_user
       comment = create :comment, :with_user
       #404
       visit "posts/#{post.id}/comments/#{comment.id}"
