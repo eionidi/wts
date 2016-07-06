@@ -40,10 +40,12 @@ describe CommentsController do
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
       comment = comments.values.each(&:reload).sample
-      get :show, id: comment.id
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      get :show, id: comment.id, post_id: comment.post.id
       expect(response).to have_http_status(200).and render_template 'show'
       expect(response.body).to match comment.content
-      expect(controller.instance_variable_get('@comment')).to eq post
+      expect(controller.instance_variable_get('@comment')).to eq comment
     end
   end
 
@@ -52,14 +54,15 @@ describe CommentsController do
 
     it 'should return 404 w/wrong comment id' do
       sign_in users.values.sample
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
       # comments.values.each(&:reload)
       # get :show, id: Comment.last.id + 1
-      get :show, id: (Comment.last.try(:id) || 0) + 1
+      get :show, id: (Comment.last.try(:id) || 0) + 1, post_id: comment.post.id
       expect(response).to have_http_status(404)
     end
 
     it 'should redirect to My Artec' do
-    # ???
       stub_request(:get, "http://www.staging-booth-my.artec3d.com/users:80/").
          to_return(:status => 200, :body => "", :headers => {})
     end
@@ -68,7 +71,7 @@ describe CommentsController do
   shared_examples 'create comment' do |role|
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
-      expect { post :create, comment: comment_attrs }.to change { Comment.count }.by 1
+      expect { post :create, post_id: comment.post.id, comment: comment_attrs }.to change { Comment.count }.by 1
       comment = Comment.last
       expect(response).to redirect_to "posts/#{post.id}"
       expect(flash.now[:notice]).to eq "Comment ##{@comment.id} created!"
@@ -81,7 +84,7 @@ describe CommentsController do
 
     it 'should save with attach' do
       sign_in users.values.sample
-      expect { post :create,
+      expect { post :create, post_id: comment.post.id, 
                comment: comment_attrs.merge(image: fixture_file_upload('fixtures/post_image.png', 'image/png')) }.
         to change { Comment.count }.by 1
       expect(Comment.last.image).to be_exists
@@ -92,28 +95,36 @@ describe CommentsController do
     it 'admin should destroy comment' do
       sign_in users[:admin]
       comment = create :comment, :with_user
-      expect { delete :destroy, id: comment.id }.to change { Comment.count }.by -1
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      expect { delete :destroy, post_id: comment.post.id, id: comment.id }.to change { Comment.count }.by -1
       expect(response).to redirect_to '/posts'
     end
 
     it 'admin should not destroy comment w/wrong id' do
       sign_in users[:admin]
       comments.values.each(&:reload)
-      expect { delete :destroy, id: (Comment.last.try(:id) || 0) + 1 }.to not_change { Comment.count }
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      expect { delete :destroy, post_id: comment.post.id, id: (Comment.last.try(:id) || 0) + 1 }.to not_change { Comment.count }
       expect(response).to have_http_status(404)
     end
 
     it 'user should not destroy comment' do
       sign_in users[:user]
       comment = create :comment, :with_user
-      expect { delete :destroy, id: comment.id }.to not_change { Comment.count }
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      expect { delete :destroy, post_id: comment.post.id, id: comment.id }.to not_change { Comment.count }
       expect(response).to redirect_to '/'
     end
 
     it 'moderator should not destroy post' do
       sign_in users[:moderator]
       comment = create :comment, :with_user
-      expect { delete :destroy, id: comment.id }.to not_change { Comment.count }
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      expect { delete :destroy, post_id: comment.post.id, id: comment.id }.to not_change { Comment.count }
       expect(response).to redirect_to '/'
     end
   end
@@ -122,7 +133,9 @@ describe CommentsController do
     it "with empty '#{attr_name}'" do
       sign_in users[:admin]
       comment = create :comment, comment_attrs
-      patch :update, id: comment.id, comment: comment_params.merge(attr_name => '')
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params.merge(attr_name => ''), post_id: comment.post.id
       comment.reload
       expect(comment.content).to eq comment_attrs[:content]
       expect(response).to render_template 'edit'
@@ -134,7 +147,9 @@ describe CommentsController do
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
       comment = create :comment, comment_attrs
-      patch :update, id: comments[role.to_sym].id, comment: comment_params
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comments[role.to_sym].id, comment: comment_params, post_id: comment.post.id
       post.reload
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{post.id}"
@@ -148,7 +163,9 @@ describe CommentsController do
     it 'user should not update someones comment' do
       sign_in users[:user]
       comment = create :comment, comment_attrs
-      patch :update, id: comment.id, comment: comment_params
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
       comment.reload
       expect(comment.content).to eq comment_attrs[:content]
     end
@@ -156,7 +173,9 @@ describe CommentsController do
     it 'admin should update someones comment' do
       sign_in users[:admin]
       comment = create :comment, comment_attrs
-      patch :update, id: comment.id, comment: comment_params
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
       post.reload
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{post.id}"
@@ -166,7 +185,9 @@ describe CommentsController do
     it 'moderator should update someones comment' do
       sign_in users[:moderator]
       comment = create :comment, comment_attrs
-      patch :update, id: comment.id, comment: comment_params
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
       post.reload
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{post.id}"
@@ -176,9 +197,11 @@ describe CommentsController do
     it 'should save updated_at' do
       sign_in users[:admin]
       comment = create :comment, comment_attrs
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
       time = Faker::Time.between 1.year.ago, 1.year.from_now
       Timecop.freeze time
-      expect { patch :update, id: comment.id, comment: comment_params }.to change { comment.reload.updated_at.to_i }.to time.to_i
+      expect { patch :update, id: comment.id, post_id: comment.post.id, comment: comment_params }.to change { comment.reload.updated_at.to_i }.to time.to_i
       Timecop.return
     end
 
@@ -186,7 +209,9 @@ describe CommentsController do
       sign_in users[:admin]
       comment = create :comment, comment_attrs
       old_id = comment.id.freeze
-      patch :update, id: comment.id, comment: comment_params.merge(id: (Comment.last.try(:id) || 0) + 1)
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, post_id: comment.post.id, comment: comment_params.merge(id: (Comment.last.try(:id) || 0) + 1)
       post.reload
       expect(post.content).to eq post_params[:content]
       expect(response).to redirect_to "/posts/#{post.id}"
@@ -197,7 +222,9 @@ describe CommentsController do
     it 'should not update w/wrong comment id' do
       sign_in users[:admin]
       comment = create :comment, comment_attrs
-      patch :update, id: ((Comment.last.try(:id) || 0) + 1), comment: comment_params
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: ((Comment.last.try(:id) || 0) + 1), comment: comment_params, post_id: comment.post.id
       post.reload
       expect(comment.content).to eq comment_attrs[:content]
       expect(response).to have_http_status(404)
