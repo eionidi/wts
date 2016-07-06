@@ -231,11 +231,14 @@ feature 'comments', js: true do
     end
 
     scenario 'correct case for user' do
-      login_as create(:user, :user)
-      comment = create :comment, :with_user
+      WebMock.allow_net_connect!
+      login_as users[:user]
+      comment = create :comment, author: users[:user]
       #404
-      visit "posts/#{post.id}/comments/#{comment.id}"
-      puts("posts/#{post.id}/comments/#{comment.id}")
+      # stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      #   to_return(status: 200, body: { 'exist' => false }.to_json)
+      visit "posts/#{comment.post.id}/comments/#{comment.id}"
+      puts page.body
       expect(page).to have_link 'edit'
       click_on 'edit'
       expect(page.body).to match "Edit comment ##{comment.id}"
@@ -244,6 +247,7 @@ feature 'comments', js: true do
       find('input[value="update"]').click
       expect(page.body).to match "Comment ##{comment.id}"
       expect(page.body).to match 'Updated comment'
+      WebMock.disable_net_connect!
     end
   end
 end

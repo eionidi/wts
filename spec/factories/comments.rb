@@ -4,7 +4,7 @@ FactoryGirl.define do
     post { create :post, :with_user }
    
     trait :with_user do
-      author { create :user }
+      author { post.author }
     end
     # trait :with_post do
     #   post { create :post, :with_user }
