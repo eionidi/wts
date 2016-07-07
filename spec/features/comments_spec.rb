@@ -212,5 +212,20 @@ feature 'comments', js: true do
       WebMock.disable_net_connect!
     end
   end
+
+  # context 'redirect on My Artec' do
+  #   scenario 'correct case for admin' do
+  #     WebMock.allow_net_connect!
+  #     login_as users[:user]
+  #     user_ma = User.new(user(email: "admin@my.artec3d.com"))
+  #     comment = create :comment, author: user_ma
+  #     visit "posts/#{comment.post.id}/comments/#{comment.id}"
+  #     puts(page.body)
+  #     expect(page).to have_link 'On MyArtec3D'
+  #     click_on 'On MyArtec3D'
+  #     expect(current_url).to eq 'https://staging-booth-my.artec3d.com/login'
+  #     WebMock.disable_net_connect!
+  #   end
+  # end
 end
 
