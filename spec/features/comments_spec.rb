@@ -218,7 +218,7 @@ feature 'comments', js: true do
   #     WebMock.allow_net_connect!
   #     login_as users[:user]
   #     user_ma = User.new(user(email: "admin@my.artec3d.com"))
-  #     comment = create :comment, author: user_ma
+  #     comment = create :comment, author: users[:admin]
   #     visit "posts/#{comment.post.id}/comments/#{comment.id}"
   #     puts(page.body)
   #     expect(page).to have_link 'On MyArtec3D'
