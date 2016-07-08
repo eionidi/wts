@@ -93,10 +93,11 @@ feature 'comments', js: true do
   # shared_examples 'view comment' do
   #   scenario "correct case with role '#{role}'"
   # 	login_as users[role.to_sym]
-  # 	post = create :post, :with_user
-  #     comment = create :comment, :with_user
-  #     visit "/posts/#{post.id}/comments/#{comment.id}" 
-  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{post.id}"
+  #     comment = create :comment, author: users[role.to_sym]
+  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+  #     to_return(status: 200, body: { 'exist' => false }.to_json)
+  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
+  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
   #     expect(page.body).to match comment.content
   #   end
   # end
