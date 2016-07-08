@@ -11,9 +11,6 @@ feature 'comments', js: true do
     }
   end
 
-
-  #before(:each) { login_as user }
-
   shared_examples 'create comment' do |role|
     scenario "correct case with role '#{role}'" do
       login_as users[role.to_sym]
@@ -49,6 +46,7 @@ feature 'comments', js: true do
   end
 
   context 'delete comment' do
+    # TODO: change to delete someones comment
     scenario 'correct case for admin' do
       login_as users[:admin]
       comment = create :comment, author: users[:admin]
@@ -91,7 +89,7 @@ feature 'comments', js: true do
   end
 
   # shared_examples 'view comment' do
-  #   scenario "correct case with role '#{role}'"
+  #   scenario "correct case with role '#{role}'" do
   # 	login_as users[role.to_sym]
   #     comment = create :comment, author: users[role.to_sym]
   #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
@@ -106,6 +104,7 @@ feature 'comments', js: true do
   #   User.roles.keys.each { |role| it_behaves_like 'view comment', role }
   # end
 
+  # TODO: change to view someones Comment
   context 'view comment' do
     scenario 'correct case for user' do
       login_as users[:user]
@@ -140,7 +139,7 @@ feature 'comments', js: true do
   end
 
   # shared_examples 'edit comment' do
-  # 	scenario "correct case with role '#{role}'"
+  # 	scenario "correct case with role '#{role}'" do
   #     login_as users[role.to_sym]
   #     comment = create :comment, :with_user
   # =>  stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
@@ -161,7 +160,8 @@ feature 'comments', js: true do
   # 	User.roles.keys.each { |role| it_behaves_like 'edit comment', role }
   # end
 
-
+  # TODO: add edit someones Comment for all roles
+  # TODO: add test for 'User can edit any Comments at his Post'
   context 'edit comment' do
     scenario 'correct case for admin' do
       login_as users[:admin]
@@ -176,7 +176,7 @@ feature 'comments', js: true do
       page.fill_in 'comment[content]', with: 'New content'
       find('input[value="update"]').click
       expect(page.find('header').text).to eq "Post ##{comment.post.id}"
-      #expect(page.body).to match 'Updated comment'
+      expect(page.body).to match 'New content'
     end
 
     scenario 'correct case for moderator' do
@@ -214,19 +214,17 @@ feature 'comments', js: true do
     end
   end
 
-  # context 'redirect on My Artec' do
-  #   scenario 'correct case for admin' do
-  #     WebMock.allow_net_connect!
-  #     login_as users[:user]
-  #     user_ma = User.new(user(email: "admin@my.artec3d.com"))
-  #     comment = create :comment, author: users[:admin]
-  #     visit "posts/#{comment.post.id}/comments/#{comment.id}"
-  #     puts(page.body)
-  #     expect(page).to have_link 'On MyArtec3D'
-  #     click_on 'On MyArtec3D'
-  #     expect(current_url).to eq 'https://staging-booth-my.artec3d.com/login'
-  #     WebMock.disable_net_connect!
-  #   end
-  # end
+  context 'redirect on My Artec' do
+    scenario 'correct case for admin' do
+      login_as users[:user]
+      comment = create :comment, author: users[:admin]
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+        to_return(status: 200, body: { 'exist' => true }.to_json)
+      visit "posts/#{comment.post.id}/comments/#{comment.id}"
+      expect(page).to have_link 'On MyArtec3D'
+      click_on 'On MyArtec3D'
+      expect(current_url).to match 'https://staging-booth-my.artec3d.com'
+    end
+  end
 end
 

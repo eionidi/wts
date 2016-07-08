@@ -216,5 +216,6 @@ describe PostsController do
       expect(response).to have_http_status(404)
     end
     %i(title content).each { |attr_name| it_behaves_like 'update post', attr_name }
+    # [:title, :content].each { |attr_name| it_behaves_like 'update post', attr_name }
   end
 end

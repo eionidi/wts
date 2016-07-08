@@ -57,6 +57,8 @@ describe Comment do
     describe 'comments' do
       it { should belong_to(:author) }
       it { should belong_to(:post) }
+      # TODO: add last_updated_by association
+
       # it 'should return comment author' do
       #   user = create :user, :user
       #   comment = create :comment, author: user
@@ -69,6 +71,7 @@ describe Comment do
       #   expect(comment.post).to eq post
       # end
 
+      # TODO: remove
       it 'should return user of last comment' do
         first_user = create :user
         last_user = create :user
@@ -81,6 +84,8 @@ describe Comment do
 
   context 'method' do
     describe 'last_actor' do
+      # TODO: use User instaed of User.name
+      # TODO: uncovered case: returned value is last_updated_by
       it 'should return author name' do
         user = create :user, :user
         comment = create :comment, author: user
