@@ -8,8 +8,10 @@ class LikesController < ApplicationController
   end
 
   def create
+    @like = @post.likes.create user: current_user
   end
 
   def destroy
+    @like.destroy
   end
 end
