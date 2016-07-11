@@ -46,16 +46,12 @@ feature 'comments', js: true do
   end
 
   context 'delete comment' do
-    # TODO: change to delete someones comment
     scenario 'correct case for admin' do
       login_as users[:admin]
-      comment = create :comment, author: users[:admin]
-   	  #comment = Comment.create(content: Faker::Lorem.paragraph, post: create(:post, :with_user))
+      comment = create :comment, author: users[:user]
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      # expect(page).to have_link comment.content 
-      # click_on comment.content
       expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
       expect(page).to have_link 'delete'
       click_on 'delete'
@@ -69,8 +65,6 @@ feature 'comments', js: true do
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      # expect(page).to have_link comment.content 
-      # click_on comment.content
       expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
       expect(page).not_to have_link 'delete'
     end
@@ -81,17 +75,54 @@ feature 'comments', js: true do
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      # expect(page).to have_link comment.content 
-      # click_on comment.content
       expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
       expect(page).not_to have_link 'delete'
     end
   end
 
-  # shared_examples 'view comment' do
-  #   scenario "correct case with role '#{role}'" do
-  # 	login_as users[role.to_sym]
-  #     comment = create :comment, author: users[role.to_sym]
+  shared_examples 'view comment' do |role|
+    scenario "correct case with role '#{role}'" do
+  	  login_as users[role.to_sym]
+      comment = create :comment, author: users[role.to_sym]
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      visit "/posts/#{comment.post.id}/comments/#{comment.id}"
+      expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
+      expect(page.body).to match comment.content
+    end
+  end
+
+  context 'view comment' do
+    User.roles.keys.each { |role| it_behaves_like 'view comment', role }
+  end
+
+  # TODO: change to view someones Comment
+  # how to do it in shared ex?
+  # context 'view comment' do
+  #   scenario 'correct case for user' do
+  #     login_as users[:user]
+  #     comment = create :comment, author: users[:admin]
+  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+  #     to_return(status: 200, body: { 'exist' => false }.to_json)
+  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
+  #     #save_and_open_page
+  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
+  #     expect(page.body).to match comment.content
+  #   end
+
+  #   scenario 'correct case for admin' do
+  #     login_as users[:admin]
+  #     comment = create :comment, author: users[:moderator]
+  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+  #     to_return(status: 200, body: { 'exist' => false }.to_json)
+  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
+  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
+  #     expect(page.body).to match comment.content
+  #   end
+
+  #   scenario 'correct case for moderator' do
+  #     login_as users[:moderator]
+  #     comment = create :comment, author: users[:user]
   #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
   #     to_return(status: 200, body: { 'exist' => false }.to_json)
   #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
@@ -100,72 +131,32 @@ feature 'comments', js: true do
   #   end
   # end
 
-  # context 'view comment' do
-  #   User.roles.keys.each { |role| it_behaves_like 'view comment', role }
-  # end
-
-  # TODO: change to view someones Comment
-  context 'view comment' do
-    scenario 'correct case for user' do
-      login_as users[:user]
-      comment = create :comment, author: users[:user]
+  shared_examples 'edit comment' do |role|
+  	scenario "correct case with role '#{role}'" do
+      login_as users[role.to_sym]
+      comment = create :comment, author: users[role.to_sym]
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
-      visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      #save_and_open_page
-      expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-      expect(page.body).to match comment.content
-    end
-
-    scenario 'correct case for admin' do
-      login_as users[:admin]
-      comment = create :comment, author: users[:admin]
-      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      to_return(status: 200, body: { 'exist' => false }.to_json)
-      visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-      expect(page.body).to match comment.content
-    end
-
-    scenario 'correct case for moderator' do
-      login_as users[:moderator]
-      comment = create :comment, author: users[:moderator]
-      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      to_return(status: 200, body: { 'exist' => false }.to_json)
-      visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-      expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-      expect(page.body).to match comment.content
+      visit "posts/#{comment.post.id}/comments/#{comment.id}"
+      expect(page).to have_link 'edit'
+      click_on 'edit'
+      expect(page.body).to match "Edit comment ##{comment.id}"
+      expect(page).to have_selector 'input[value="update"]'
+      page.fill_in 'comment[content]', with: 'New content'
+      find('input[value="update"]').click
+      expect(page.body).to match "Post ##{comment.post.id}"
+      expect(page.body).to match 'New content'
     end
   end
 
-  # shared_examples 'edit comment' do
-  # 	scenario "correct case with role '#{role}'" do
-  #     login_as users[role.to_sym]
-  #     comment = create :comment, :with_user
-  # =>  stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      # to_return(status: 200, body: { 'exist' => false }.to_json)
-  #     visit "posts/#{comment.post.id}/comments/#{comment.id}"
-  #     expect(page).to have_link 'edit'
-  #     click_on 'edit'
-  #     expect(page.body).to match "Edit comment ##{comment.id}"
-  #     expect(page).to have_selector 'input[value="update"]'
-  #     page.fill_in 'comment[content]', with: 'New content'
-  #     find('input[value="update"]').click
-  #     expect(page.body).to match "Post ##{comment.post.id}"
-  #     expect(page.body).to match 'Updated comment'
-  #   end
-  # end
-
-  # context 'edit comment' do
-  # 	User.roles.keys.each { |role| it_behaves_like 'edit comment', role }
-  # end
-
-  # TODO: add edit someones Comment for all roles
-  # TODO: add test for 'User can edit any Comments at his Post'
   context 'edit comment' do
+  	User.roles.keys.each { |role| it_behaves_like 'edit comment', role }
+  end
+
+  context 'edit  someones comment' do
     scenario 'correct case for admin' do
       login_as users[:admin]
-      comment = create :comment, author: users[:admin]
+      comment = create :comment, author: users[:user]
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "posts/#{comment.post.id}/comments/#{comment.id}"
@@ -181,7 +172,7 @@ feature 'comments', js: true do
 
     scenario 'correct case for moderator' do
       login_as users[:moderator]
-      comment = create :comment, author: users[:moderator]
+      comment = create :comment, author: users[:admin]
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "posts/#{comment.post.id}/comments/#{comment.id}"
@@ -192,15 +183,28 @@ feature 'comments', js: true do
       page.fill_in 'comment[content]', with: 'New content'
       find('input[value="update"]').click
       expect(page.body).to match "Post ##{comment.post.id}"
-      #expect(page.body).to match 'Updated comment'
+      expect(page.body).to match 'New content'
     end
 
     scenario 'correct case for user' do
       WebMock.allow_net_connect!
       login_as users[:user]
-      comment = create :comment, author: users[:user]
+      comment = create :comment, author: users[:moderator]
       # stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       # to_return(status: 200, body: { 'exist' => false }.to_json)
+      visit "posts/#{comment.post.id}/comments/#{comment.id}"
+      expect(page).not_to have_link 'edit'
+      WebMock.disable_net_connect!
+    end
+  end
+
+  context 'edit any comments at his post' do
+  	scenario 'correct case for user' do
+  	  login_as users[:user]
+  	  post = create :post, author: users[:user]
+      comment = create :comment, author: users[:admin], post: post
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
       visit "posts/#{comment.post.id}/comments/#{comment.id}"
       expect(page).to have_link 'edit'
       click_on 'edit'
@@ -209,8 +213,7 @@ feature 'comments', js: true do
       page.fill_in 'comment[content]', with: 'New content'
       find('input[value="update"]').click
       expect(page.body).to match "Post ##{comment.post.id}"
-      #expect(page.body).to match 'Updated comment'
-      WebMock.disable_net_connect!
+      expect(page.body).to match 'New content'
     end
   end
 

@@ -63,11 +63,6 @@ describe CommentsController do
       get :show, id: (Comment.last.try(:id) || 0) + 1, post_id: comment.post.id
       expect(response).to have_http_status(404)
     end
-
-    # it 'should redirect to My Artec' do
-    #   stub_request(:get, "http://www.staging-booth-my.artec3d.com/users:80/").
-    #      to_return(:status => 200, :body => "", :headers => {})
-    # end
   end
 
   shared_examples 'create comment' do |role|
@@ -86,15 +81,6 @@ describe CommentsController do
   describe '#create' do
     User.roles.keys.each { |role| it_behaves_like 'create comment', role }
 
-  # describe '#create' do
-  #   it 'should create comment by admin' do
-  #     sign_in users[:admin]
-  #     expect { post :create, post: post_attrs, post_id: comment.post.id, comment: comment_attrs }.to change { Comment.count }.by 1
-  #     comment = Comment.last
-  #     expect(response).to redirect_to "posts/#{comment.post.id}"
-  #     expect(flash.now[:notice]).to eq "Comment ##{comment.id} created!"
-  #     expect(comment.author).to eq users[role.to_sym]	
-  #   end
 
     it 'should save with attach' do
       sign_in users.values.sample
@@ -228,7 +214,6 @@ describe CommentsController do
       patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
       expect(comment.reload.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{comment.post.id}"
-      #string below doesnt work, why?
       expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
     end
 
@@ -241,7 +226,7 @@ describe CommentsController do
       comment.reload
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{comment.post.id}"
-      #expect(flash[:notice]).to eq "Comment ##{@comment.id} updated!"
+      expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
     end
 
     # TODO: add test for last_updated_by
@@ -266,7 +251,6 @@ describe CommentsController do
       comment.reload
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{comment.post.id}"
-      #why undefined method `id' for nil:NilClass?
       expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
       expect(comment.id).to eq old_id
     end
