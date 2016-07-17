@@ -35,6 +35,11 @@ describe CommentsController do
       content: Faker::Lorem.paragraph
     }
   end
+  let(:wrong_comment_params) do
+  	{
+  	  content: 'aa'
+  	}
+  end
 
   shared_examples 'show comment' do |role|
     it "with role '#{role}'" do
@@ -43,7 +48,6 @@ describe CommentsController do
       stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
       to_return(status: 200, body: { 'exist' => false }.to_json)
       get :show, id: comment.id, post_id: comment.post.id
-      #xhr :get, :show, id: comment.id, post_id: comment.post.id
       expect(response).to have_http_status(200).and render_template 'show'
       expect(response.body).to match comment.content
       expect(controller.instance_variable_get('@comment')).to eq comment
@@ -77,7 +81,6 @@ describe CommentsController do
     end
   end
 
-  # TODO: add test for invalid content
   describe '#create' do
     User.roles.keys.each { |role| it_behaves_like 'create comment', role }
 
@@ -88,6 +91,13 @@ describe CommentsController do
       expect { post(:create, post_id: post.id, comment: comment_params.merge(file_attach: fixture_file_upload('fixtures/post_image.png', 'image/png'))) }.
         to change { Comment.count }.by 1
       expect(Comment.last.file_attach).to be_exists
+    end
+
+    it 'should not create comment with invalid content' do
+      sign_in users.values.sample
+      post = posts.values.each(&:reload).sample
+      expect { post(:create, post_id: post.id, comment: wrong_comment_params) }.to change { Comment.count }.by 0
+      #expect(flash.now[:notice]).to eq "Errors: #{'Content is too short (minimum is 3 characters)'}"
     end
   end
 
@@ -143,58 +153,56 @@ describe CommentsController do
     end
   end
 
-  # shared_examples'update own comment' do |role|
-  #   it "with role '#{role}'" do
-  #     sign_in users[role.to_sym]
-  #     comment = create :comment, :author[users]
+  shared_examples'update own comment' do |role|
+    it "with role '#{role}'" do
+      sign_in users[role.to_sym]
+      comment = create :comment, author: users[role.to_sym]
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
+      comment.reload
+      expect(comment.content).to eq comment_params[:content]
+      expect(response).to redirect_to "/posts/#{comment.post.id}"
+      expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
+    end
+  end
+
+  describe '#update' do
+    User.roles.keys.each { |role| it_behaves_like 'update own comment', role }
+
+  # describe '#update' do
+  #   it "should update own comment by admin" do
+  #     sign_in users[:admin]
+  #     comment = create :comment, author: users[:admin]
   #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
   #     to_return(status: 200, body: { 'exist' => false }.to_json)
-  #     patch :update, id: comment[role.to_sym].id, comment: comment_params, post_id: comment.post.id
+  #     patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
   #     comment.reload
   #     expect(comment.content).to eq comment_params[:content]
   #     expect(response).to redirect_to "/posts/#{comment.post.id}"
-  #     #expect(flash[:notice]).to eq "Comment ##{@comment.id} updated!"
   #   end
-  # end
 
-  # describe '#update' do
-  #   User.roles.keys.each { |role| it_behaves_like 'update own comment', role }
+  #   it "should update own comment by moderator" do
+  #     sign_in users[:moderator]
+  #     comment = create :comment, author: users[:moderator]
+  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+  #     to_return(status: 200, body: { 'exist' => false }.to_json)
+  #     patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
+  #     comment.reload
+  #     expect(comment.content).to eq comment_params[:content]
+  #     expect(response).to redirect_to "/posts/#{comment.post.id}"
+  #   end
 
-  # TODO: shared examples
-  # TODO: add test for 'User can edit any Comments at his Post'
-  describe '#update' do
-    it "should update own comment by admin" do
-      sign_in users[:admin]
-      comment = create :comment, author: users[:admin]
-      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      to_return(status: 200, body: { 'exist' => false }.to_json)
-      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
-      comment.reload
-      expect(comment.content).to eq comment_params[:content]
-      expect(response).to redirect_to "/posts/#{comment.post.id}"
-    end
-
-    it "should update own comment by moderator" do
-      sign_in users[:moderator]
-      comment = create :comment, author: users[:moderator]
-      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      to_return(status: 200, body: { 'exist' => false }.to_json)
-      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
-      comment.reload
-      expect(comment.content).to eq comment_params[:content]
-      expect(response).to redirect_to "/posts/#{comment.post.id}"
-    end
-
-    it "should update own comment by user" do
-      sign_in users[:user]
-      comment = create :comment, author: users[:user]
-      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-      to_return(status: 200, body: { 'exist' => false }.to_json)
-      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
-      comment.reload
-      expect(comment.content).to eq comment_params[:content]
-      expect(response).to redirect_to "/posts/#{comment.post.id}"
-    end
+  #   it "should update own comment by user" do
+  #     sign_in users[:user]
+  #     comment = create :comment, author: users[:user]
+  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+  #     to_return(status: 200, body: { 'exist' => false }.to_json)
+  #     patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
+  #     comment.reload
+  #     expect(comment.content).to eq comment_params[:content]
+  #     expect(response).to redirect_to "/posts/#{comment.post.id}"
+  #   end
 
     it 'user should not update someones comment' do
       sign_in users[:user]
@@ -205,6 +213,17 @@ describe CommentsController do
       comment.reload
       expect(comment.content).to eq comment_attrs[:content]
     end
+
+    it 'user should update his own comment' do
+      sign_in users[:user]
+      comment = create :comment, author: users[:user]
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
+      expect(comment.reload.content).to eq comment_params[:content]
+      expect(response).to redirect_to "/posts/#{comment.post.id}"
+      expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
+    end	
 
     it 'admin should update someones comment' do
       sign_in users[:admin]
@@ -227,6 +246,16 @@ describe CommentsController do
       expect(comment.content).to eq comment_params[:content]
       expect(response).to redirect_to "/posts/#{comment.post.id}"
       expect(flash[:notice]).to eq "Comment ##{comment.id} updated!"
+    end
+
+    it 'should return last user updated comment' do
+      sign_in users[:admin]
+      comment = create :comment, author: users[:admin]
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      patch :update, id: comment.id, comment: comment_params, post_id: comment.post.id
+      comment.reload
+      expect(last_updated_by: users).to eq users[:admin]
     end
 
     # TODO: add test for last_updated_by

@@ -35,7 +35,7 @@ describe Comment do
 
   context 'method' do
     describe 'last_actor' do
-      # TODO: uncovered case: returned value is last_updated_by
+     
       it 'should return author name' do
         user = create :user, :user
         comment = create :comment, author: user
@@ -47,8 +47,8 @@ describe Comment do
         user_first = create :user, :user
         comment = create :comment, author: user_first, post: post
         user_last = create :user, :user
-        comment_update = update :comment, author: user_last, post: post
-        expect(comment_last.last_updated_by).to eq user_last
+        comment_updated = update :comment, author: user_last, post: post
+        expect(comment_updated.last_updated_by).to eq user_last
       end
     end
   end
