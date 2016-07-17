@@ -22,6 +22,7 @@ class PostsController < ApplicationController
   end
 
   def show
+    @like = @post.likes.find_or_initialize_by user: current_user
   end
 
   def edit

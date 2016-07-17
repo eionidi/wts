@@ -16,6 +16,9 @@
   <tr><td>Created at:</td><td><%= format_datetime @post.created_at %></td></tr>
   <tr><td>Updated at:</td><td><%= format_datetime @post.updated_at %></td></tr>
   <tr><td>Content:</td><td><%= @post.content %></td></tr>
+  <tr class='post-show-likes'>
+    <%= render 'posts/likes' %>
+  </tr>
   <% if can? :edit, @post %>
     <tr><td></td><td><%= link_to 'edit', edit_post_path(@post) %></td></tr>
   <% end %>

@@ -1,0 +1,10 @@
+<td>Likes:</td>
+<td>
+  <%= link_to_if can?(:index, Like), @post.likes.count, post_likes_path(@post, @like) %>
+  <% if !@like.persisted? && can?(:create, @like) %>
+    <%= link_to '(Like!)', post_likes_path(@post, @like), method: :post, remote: true %>
+  <% end %>
+  <% if @like.persisted? && can?(:destroy, @like) %>
+    <%= link_to '(Dislike!)', post_like_path(@post, @like), method: :delete, remote: true %>
+  <% end %>
+</td>

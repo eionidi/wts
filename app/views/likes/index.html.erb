@@ -1,0 +1,14 @@
+<% content_for(:header) { "Likes for Post ##{@post.id}" } %>
+
+<table>
+  <tr>
+    <th>Author</th>
+    <th>Datetime</th>
+  </tr>
+  <% @likes.each do |like| %>
+    <tr>
+      <td><%= link_to_if can?(:show, like.user), like.user.name, user_path(like.user) %></td>
+      <td><%= format_datetime like.created_at %></td>
+    </tr>
+  <% end %>
+</table>

@@ -2,6 +2,7 @@ class Post < ActiveRecord::Base
   belongs_to :author, class_name: User
 
   has_many :comments, dependent: :restrict_with_error
+  has_many :likes, dependent: :restrict_with_error
 
   has_attached_file :image,
                     styles: { index: '200x200>', show: '400x400>' },
