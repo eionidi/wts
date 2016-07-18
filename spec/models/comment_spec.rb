@@ -47,8 +47,8 @@ describe Comment do
         user_first = create :user, :user
         comment = create :comment, author: user_first, post: post
         user_last = create :user, :user
-        comment_updated = update :comment, author: user_last, post: post
-        expect(comment_updated.last_updated_by).to eq user_last
+        comment.update(last_updated_by: user_last)
+        expect(comment.last_actor).to eq user_last
       end
     end
   end

@@ -92,44 +92,25 @@ feature 'comments', js: true do
     end
   end
 
-  context 'view comment' do
-    User.roles.keys.each { |role| it_behaves_like 'view comment', role }
+  shared_examples 'view someones comment' do |role|
+    scenario "correct case with role '#{role}'" do
+      login_as users[role.to_sym]
+      # other_user = (users.values - [users[role.to_sym]]).sample
+      comment = create :comment, :with_user
+      stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
+      to_return(status: 200, body: { 'exist' => false }.to_json)
+      visit "/posts/#{comment.post.id}/comments/#{comment.id}"
+      expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
+      expect(page.body).to match comment.content
+    end
   end
 
-  # TODO: change to view someones Comment
-  # how to do it in shared ex?
-  # context 'view comment' do
-  #   scenario 'correct case for user' do
-  #     login_as users[:user]
-  #     comment = create :comment, author: users[:admin]
-  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-  #     to_return(status: 200, body: { 'exist' => false }.to_json)
-  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-  #     #save_and_open_page
-  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-  #     expect(page.body).to match comment.content
-  #   end
+  context 'view comment' do
+    User.roles.keys.each { |role| it_behaves_like 'view comment', role }
+    User.roles.keys.each { |role| it_behaves_like 'view someones comment', role }
+  end
 
-  #   scenario 'correct case for admin' do
-  #     login_as users[:admin]
-  #     comment = create :comment, author: users[:moderator]
-  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-  #     to_return(status: 200, body: { 'exist' => false }.to_json)
-  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-  #     expect(page.body).to match comment.content
-  #   end
-
-  #   scenario 'correct case for moderator' do
-  #     login_as users[:moderator]
-  #     comment = create :comment, author: users[:user]
-  #     stub_request(:get, "https://staging-booth-my.artec3d.com/users/exist.json?user%5Bemail%5D=#{comment.last_actor.email}").
-  #     to_return(status: 200, body: { 'exist' => false }.to_json)
-  #     visit "/posts/#{comment.post.id}/comments/#{comment.id}"
-  #     expect(page.find('header').text).to eq "Comment ##{comment.id} on post ##{comment.post.id}"
-  #     expect(page.body).to match comment.content
-  #   end
-  # end
+  
 
   shared_examples 'edit comment' do |role|
   	scenario "correct case with role '#{role}'" do
