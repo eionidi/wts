@@ -111,8 +111,7 @@ describe PostsController do
     it 'should save with image' do
       sign_in users.values.sample
       expect { post :create,
-               post: post_attrs.merge(image: fixture_file_upload('fixtures/post_image.png', 'image/png')) }.
-        to change { Post.count }.by 1
+               post: post_attrs.merge(image: fixture_file_upload('fixtures/post_image.png', 'image/png')) }.to change { Post.count }.by 1
       expect(Post.last.image).to be_exists
     end
   end
@@ -217,5 +216,6 @@ describe PostsController do
       expect(response).to have_http_status(404)
     end
     %i(title content).each { |attr_name| it_behaves_like 'update post', attr_name }
+    # [:title, :content].each { |attr_name| it_behaves_like 'update post', attr_name }
   end
 end

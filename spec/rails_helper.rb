@@ -55,3 +55,10 @@ RSpec.configure do |config|
   config.after(:each) { DatabaseCleaner.clean }
   config.after(:each) { FileUtils.rm_rf(Dir["#{Rails.root}/public/paperclip/test/"]) }
 end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end

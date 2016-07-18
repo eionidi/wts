@@ -33,4 +33,5 @@ group :test do
   gem 'faker'
   gem 'timecop'
   gem 'webmock'
+  gem 'shoulda-matchers', '~> 3.1'
 end
