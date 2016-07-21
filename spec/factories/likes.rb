@@ -2,10 +2,10 @@ FactoryGirl.define do
   factory :like do
   	post { create :post, :with_user }
     trait :with_user do
-      author { create :user }
+      user { create :user }
     end
-    trait :with_post do
-      post { create :post, author: author}
-    end
+    # trait :with_post do
+    #   post { create :post, author: author}
+    # end
   end
 end
