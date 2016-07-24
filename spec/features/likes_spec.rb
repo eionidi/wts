@@ -90,6 +90,7 @@ feature 'like', js: true do
       #find(:css, "a:contains('users/#{post.id}/')").click
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
       #find(:css, "a:contains('users/#{user.id}/')")
+      expect(page.body).to match users[:admin].name
     end
 
 	  scenario 'correct case for moderator' do
@@ -98,14 +99,33 @@ feature 'like', js: true do
       like = create :like, user: users[:moderator], post: post
       visit "/posts/#{post.id}/likes"
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
+      expect(page.body).to match users[:moderator].name
     end
 
     scenario 'correct case for user' do
   	  login_as users[:user]
       post = create :post, author: users[:admin]
       like = create :like, user: users[:user], post: post
-      visit "/posts/#{post.id}"
-      expect(page.find('header').text).to match "Post ##{post.id}"
+      visit "/posts/#{post.id}/likes"
+      expect(page.find('header').text).to match "Posts"
+    end
+
+    scenario 'view someones likes for admin' do
+      login_as users[:admin]
+      post = create :post, author: users[:user]
+      like = create :like, user: users[:moderator], post: post
+      visit "/posts/#{post.id}/likes"
+      expect(page.find('header').text).to match "Likes for Post ##{post.id}"
+      expect(page.body).to match users[:moderator].name
+    end
+
+    scenario 'view someones likes for moderator' do
+      login_as users[:moderator]
+      post = create :post, author: users[:user]
+      like = create :like, user: users[:admin], post: post
+      visit "/posts/#{post.id}/likes"
+      expect(page.find('header').text).to match "Likes for Post ##{post.id}"
+      expect(page.body).to match users[:admin].name
     end
   end
 end
