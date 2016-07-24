@@ -25,22 +25,22 @@ feature 'like', js: true do
 
   shared_examples 'should not create second like on post' do |role|
     scenario "correct case with role '#{role}'" do
-	  login_as users[role.to_sym]
-	  other_user = (users.values - [users[role.to_sym]]).sample
+	    login_as users[role.to_sym]
+	    other_user = (users.values - [users[role.to_sym]]).sample
       post = create :post, author: other_user
-	  like = create :like, user: users[role.to_sym], post: post
-	  visit "/posts/#{post.id}"
-	  expect(page).not_to have_link 'Like'
+	    like = create :like, user: users[role.to_sym], post: post
+	    visit "/posts/#{post.id}"
+	    expect(page).not_to have_link 'Like'
     end
   end  
 
   shared_examples 'should not create like on own post' do |role|
     scenario "correct case with role '#{role}'" do
-	  login_as users[role.to_sym]
-	  post = create :post, author: users[role.to_sym]
-	  like = create :like, user: users[role.to_sym], post: post
-	  visit "/posts/#{post.id}"
-	  expect(page).not_to have_link 'Like'
+	    login_as users[role.to_sym]
+	    post = create :post, author: users[role.to_sym]
+	    like = create :like, user: users[role.to_sym], post: post
+	    visit "/posts/#{post.id}"
+	    expect(page).not_to have_link 'Like'
     end
   end  
 
@@ -91,8 +91,8 @@ feature 'like', js: true do
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
     end
 
-	scenario 'correct case for moderator' do
-  	login_as users[:moderator]
+	  scenario 'correct case for moderator' do
+  	  login_as users[:moderator]
       post = create :post, author: users[:user]
       like = create :like, user: users[:moderator], post: post
       visit "/posts/#{post.id}/likes"
@@ -100,7 +100,7 @@ feature 'like', js: true do
     end
 
     scenario 'correct case for user' do
-  	login_as users[:user]
+  	  login_as users[:user]
       post = create :post, author: users[:admin]
       like = create :like, user: users[:user], post: post
       visit "/posts/#{post.id}"
