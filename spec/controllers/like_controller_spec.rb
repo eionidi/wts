@@ -94,20 +94,6 @@ describe LikesController do
     User.roles.keys.each { |role| it_behaves_like 'should not create like on own post', role }
   end 
 
-  # shared_examples 'should not create second like on someones post' do |role|
-  #   it "with role '#{role}'" do
-  #     sign_in users[role.to_sym]
-  #     other_user = (users.values - [users[role.to_sym]]).sample
-  #     post = create :post, author: other_user
-  #     like = create :like, user: users[role.to_sym], post: post  
-  #     expect { xhr :post, :create, post_id: post.id, user_id: users[role.to_sym].id }.to change { Like.count }.by -1
-  #   end
-  # end 
-
-  # describe '#create' do
-  #   User.roles.keys.each { |role| it_behaves_like 'should not create second like on someones post', role }
-  # end 
-
   shared_examples 'destroy own like' do |role|
     it "with role '#{role}'" do
       sign_in users[role.to_sym]
