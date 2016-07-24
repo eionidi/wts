@@ -51,7 +51,7 @@ feature 'like', js: true do
 
     # scenario 'incorrect case' do
     #   login_as users[:admin]
-  	 #  post = create :post, author: users[:admin]
+  	#   post = create :post, author: users[:admin]
     #   visit "/posts/#{post.id}"
     #   expect(page).not_to have_link 'Like'
     # end
@@ -89,6 +89,7 @@ feature 'like', js: true do
       visit "/posts/#{post.id}/likes"
       #find(:css, "a:contains('users/#{post.id}/')").click
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
+      #find(:css, "a:contains('users/#{user.id}/')")
     end
 
 	  scenario 'correct case for moderator' do
