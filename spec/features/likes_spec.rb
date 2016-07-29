@@ -83,6 +83,10 @@ feature 'like', js: true do
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
       expect(page.body).to match users[:admin].name
       expect(page.body).to match users[:moderator].name
+      #post.likes.each { |like| expect(page).to have_link like.user.name }
+      click_on users[:admin].name
+      expect(page.body).to match users[:admin].email
+      expect(page.body).to match users[:admin].role
     end
 
     scenario 'correct case for moderator' do
@@ -95,6 +99,9 @@ feature 'like', js: true do
       expect(page.find('header').text).to match "Likes for Post ##{post.id}"
       expect(page.body).to match users[:moderator].name
       expect(page.body).to match users[:admin].name
+      click_on users[:admin].name
+      expect(page.body).to match users[:admin].email
+      expect(page.body).to match users[:admin].role
     end
 
     scenario 'correct case for user' do
