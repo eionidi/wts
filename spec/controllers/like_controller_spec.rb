@@ -43,12 +43,11 @@ describe LikesController do
       expect(controller.instance_variable_get('@likes')).to eq like.post.likes
     end
 
-    it "should show likes to user" do
+    it "should not show likes to user" do
       sign_in users[:user]
       like = likes.values.each(&:reload).sample
       get :index, id: like.id, post_id: like.post.id
       expect(response).to redirect_to "/"
-      expect(response.body).to match ' '
     end
   end
 
